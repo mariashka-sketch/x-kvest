@@ -1,0 +1,13 @@
+{
+  "name": "Икс-квест",
+  "short_name": "Икс-квест",
+  "description": "Алгебра за три дня — минус, уравнения, задачи. И котики.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f0b17",
+  "theme_color": "#0f0b17",
+  "lang": "ru",
+  "icons": [{ "src": "icon.png", "sizes": "180x180", "type": "image/png", "purpose": "any" }]
+}
