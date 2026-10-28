@@ -1,0 +1,13 @@
+{
+  "name": "Гео-квест",
+  "short_name": "Гео-квест",
+  "description": "Геометрия 7 класса на живых чертежах. И котики.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f0b17",
+  "theme_color": "#0f0b17",
+  "lang": "ru",
+  "icons": [{ "src": "icon.png", "sizes": "180x180", "type": "image/png", "purpose": "any" }]
+}
