@@ -1,0 +1,13 @@
+{
+  "name": "Икс-квест 2",
+  "short_name": "Икс-квест 2",
+  "description": "Минус, скобки, подобные и перенос через «=». И котики.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f0b17",
+  "theme_color": "#0f0b17",
+  "lang": "ru",
+  "icons": [{ "src": "icon.png", "sizes": "180x180", "type": "image/png", "purpose": "any" }]
+}

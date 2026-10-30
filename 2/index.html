@@ -1,0 +1,2357 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Икс-квест 2">
+<meta name="theme-color" content="#0f0b17">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Икс-квест 2: минус, скобки, подобные и перенос через «=» — алгебра 7 класса. И котики.">
+<title>Икс-квест 2</title>
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="icon" href="icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<style>
+/* Икс-квест — оформление. Тёмная тема, крупные формулы, клавиатура под большой палец. */
+:root {
+  --bg: #0f0b17; --bg2: #160f23; --card: #1d1531; --card2: #271d3f; --line: #362a54;
+  --ink: #f8f5ff; --mute: #cdc4e2; --dim: #9a8fb6;
+  --pink: #ff4f8b; --blue: #4aa8ff; --lime: #b8f04a; --gold: #ffcf4a; --violet: #c08cff; --okc: #3fe08f; --badc: #ff6070;
+  --acc: var(--pink); --acc-ink: #1a0f22; --minus: #ff4f8b;
+}
+.day1 { --acc: var(--pink); }
+.day2 { --acc: var(--blue); }
+.day3 { --acc: var(--lime); }
+.day4 { --acc: var(--gold); }
+.day5 { --acc: var(--violet); }
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html { background: var(--bg); }
+body {
+  margin: 0; color: var(--ink);
+  background: radial-gradient(120% 55% at 50% -12%, #2c1749 0%, var(--bg) 62%) fixed var(--bg);
+  font: 20px/1.4 ui-rounded, "SF Pro Rounded", -apple-system, BlinkMacSystemFont, system-ui, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: 100%; overscroll-behavior: none;
+}
+#app {
+  max-width: 520px; margin: 0 auto; min-height: 100vh; min-height: 100dvh;
+  padding: calc(env(safe-area-inset-top) + 6px) 16px calc(env(safe-area-inset-bottom) + 18px);
+  display: flex; flex-direction: column;
+}
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; touch-action: manipulation; -webkit-user-select: none; user-select: none; }
+h1 { font-size: 38px; line-height: 1.08; margin: 8px 0 10px; letter-spacing: -.02em; }
+h2 { font-size: 27px; line-height: 1.15; margin: 4px 0 4px; letter-spacing: -.01em; }
+h3 { font-size: 23px; margin: 20px 0 8px; }
+h4 { font-size: 19px; margin: 14px 0 6px; color: var(--mute); }
+p { margin: 8px 0; }
+.sub { color: var(--mute); font-size: 18px; }
+
+/* ---------- формулы ---------- */
+.m, .math, .tile, .ans, .errl, .ln, .ex, .tbl td { font-variant-numeric: tabular-nums lining-nums; }
+.m i, .math i, .ans i, .tile i, .errl i, .ln i, .k i, .tbl i, .ex i, .opt i, .tilebtn i {
+  font-family: "Iowan Old Style", Palatino, Georgia, serif; font-style: italic; font-weight: 600; padding: 0 .04em;
+}
+.mn { color: var(--minus); font-weight: 900; }
+.nw { white-space: nowrap; }
+.fr { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; font-size: .68em; line-height: 1.08; margin: 0 .12em; }
+.fr > span:first-child { border-bottom: .09em solid currentColor; padding: 0 .2em .05em; }
+.fr > span:last-child { padding-top: .05em; }
+.m { font-weight: 700; }
+
+/* ---------- кнопки ---------- */
+.btn {
+  display: block; width: 100%; padding: 16px 18px; margin-top: 12px; border-radius: 18px;
+  background: var(--acc); color: var(--acc-ink); font-weight: 800; font-size: 21px; text-align: center;
+  box-shadow: 0 10px 26px -12px var(--acc);
+}
+.btn.big { font-size: 23px; padding: 19px; }
+.btn.ghost { background: var(--card2); color: var(--ink); box-shadow: none; }
+.btn.danger { color: var(--badc); }
+.btn:active, .opt:active, .node:active, .tile:active, .errl:active, .catcard:active { transform: scale(.97); }
+.ico { width: 44px; height: 44px; border-radius: 14px; background: var(--card); font-size: 24px; display: grid; place-items: center; }
+
+/* ---------- шапка и шкала ---------- */
+.bar { display: grid; grid-template-columns: 44px 1fr 76px; align-items: center; gap: 8px; min-height: 48px; }
+.bar .ttl { text-align: center; font-weight: 800; font-size: 19px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bar .meta { text-align: right; font-weight: 800; font-size: 19px; color: var(--mute); white-space: nowrap; }
+.hearts { font-size: 17px; letter-spacing: -1px; }
+.prog { height: 10px; border-radius: 99px; background: var(--card2); margin: 6px 0 10px; overflow: hidden; flex: none; }
+.prog i { display: block; height: 100%; border-radius: 99px; background: var(--acc); transition: width .45s cubic-bezier(.2, .9, .3, 1.2); }
+
+/* ---------- экран задачи ---------- */
+#app.scr-play { height: 100vh; height: 100dvh; min-height: 0; overflow: hidden; padding-bottom: calc(env(safe-area-inset-bottom) + 8px); }
+.stage { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: 10px; padding: 2px 0 10px; }
+.task { background: var(--card); border-radius: 22px; padding: 16px; margin-top: auto; flex: none; }
+.task.big { margin: auto 0; padding: 20px 16px; }
+.lead { color: var(--mute); font-size: 19px; font-weight: 600; }
+.lead.story-lead { color: var(--ink); font-size: 22px; line-height: 1.38; }
+.task.big .lead { font-size: 21px; }
+.math { font-size: 40px; font-weight: 700; line-height: 1.25; margin: 6px 0 12px; letter-spacing: -.01em; }
+.task.big .math { font-size: 50px; }
+.math.rows { text-align: center; line-height: 1.15; }
+.math .qm { display: inline-grid; place-items: center; width: 1.3em; height: 1.3em; border-radius: 12px; border: 2px dashed var(--acc); color: var(--acc); font-size: .8em; }
+.tip { font-size: 17px; color: var(--gold); margin: 2px 0 10px; }
+.ans {
+  display: flex; align-items: center; gap: 8px; min-height: 66px; padding: 8px 14px; border-radius: 16px;
+  background: var(--bg2); border: 2px solid var(--line); font-size: 38px; font-weight: 700; transition: border-color .2s, background .2s;
+}
+.ans .pre { color: var(--mute); }
+.ans .ph { color: var(--dim); }
+.ans .val { min-width: 0; overflow-wrap: anywhere; line-height: 1.2; }
+.ans { flex-wrap: wrap; row-gap: 2px; }
+.caret { display: inline-block; vertical-align: -.14em; margin-left: 5px; width: 3px; height: 1.05em; background: var(--acc); border-radius: 2px; animation: blink 1s steps(1) infinite; }
+.ans.right { border-color: var(--okc); background: rgba(63, 224, 143, .13); }
+.ans.right .caret { display: none; }
+@keyframes blink { 50% { opacity: 0; } }
+.hintbtn { margin-top: 12px; font-size: 18px; color: var(--mute); text-decoration: underline; text-underline-offset: 3px; }
+
+.story { background: var(--card); border-radius: 18px; padding: 14px 16px; font-size: 20px; line-height: 1.42; flex: none; }
+.tbl { width: 100%; border-collapse: separate; border-spacing: 4px; font-size: 21px; flex: none; }
+.tbl th { font-size: 16px; color: var(--mute); font-weight: 700; text-align: left; padding: 2px 4px; }
+.tbl thead th { text-align: center; }
+.tbl td { background: var(--card); border-radius: 10px; padding: 9px 6px; text-align: center; font-weight: 700; }
+.tbl td.cur { box-shadow: inset 0 0 0 2px var(--acc); }
+.tbl .q { color: var(--dim); }
+.grid-paper, .note, .ex {
+  background-color: var(--bg2);
+  background-image: linear-gradient(rgba(255, 255, 255, .045) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, .045) 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+.note { border-radius: 16px; padding: 10px 14px; font-size: 26px; font-weight: 700; flex: none; }
+.note .ln { padding: 3px 0; }
+.note .ln.new { animation: pop .5s cubic-bezier(.2, .9, .3, 1.4); color: var(--acc); }
+@keyframes pop { 0% { transform: translateY(8px) scale(.94); opacity: 0; } 100% { transform: none; opacity: 1; } }
+
+/* клавиатура */
+.foot { flex: none; }
+.spec { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+.sp { padding: 12px 6px; border-radius: 14px; background: var(--card2); font-weight: 800; font-size: 19px; border: 2px dashed var(--line); }
+.pad { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.k {
+  height: 56px; border-radius: 15px; background: var(--card2); font-size: 31px; font-weight: 700;
+  display: grid; place-items: center; box-shadow: inset 0 -3px 0 rgba(0, 0, 0, .28);
+}
+.k:active { transform: translateY(1px) scale(.97); filter: brightness(1.3); }
+.k.op { background: #2c2147; color: var(--mute); }
+.k.var { color: var(--acc); font-size: 35px; }
+.k.ok { background: var(--acc); color: var(--acc-ink); font-size: 23px; font-weight: 900; }
+.span2 { grid-column: span 2; } .span3 { grid-column: span 3; } .span4 { grid-column: span 4; }
+.opts { display: flex; flex-direction: column; gap: 8px; }
+.opt { padding: 15px 16px; border-radius: 16px; background: var(--card2); text-align: left; font-size: 21px; font-weight: 700; border: 2px solid var(--line); }
+.opt .m { font-size: 26px; }
+.opts.cmp { flex-direction: row; }
+.opts.cmp .opt { flex: 1; text-align: center; font-size: 40px; }
+.opts.cmp .opt .m { font-size: inherit; }
+.foot-hint { color: var(--mute); text-align: center; font-size: 18px; padding: 10px 0 6px; }
+
+/* плитки «перенос через =» */
+.tiles { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 6px; margin: 12px 0 4px; }
+.side { display: flex; flex-wrap: wrap; align-content: center; gap: 6px; min-height: 62px; padding: 8px; border-radius: 16px; background: var(--bg2); }
+.sl { justify-content: flex-end; } .sr { justify-content: flex-start; }
+.eqs { font-size: 40px; font-weight: 900; color: var(--mute); }
+.tile { padding: 9px 11px; border-radius: 13px; font-size: 27px; font-weight: 800; background: var(--card2); border: 2px solid var(--line); min-width: 52px; }
+.tile.tv { border-color: rgba(74, 168, 255, .55); }
+.tile.moved { animation: flip .6s cubic-bezier(.2, .9, .3, 1.3); border-color: var(--acc); }
+@keyframes flip { 0% { transform: rotateY(90deg) scale(.6); opacity: .2; } 100% { transform: none; opacity: 1; } }
+.tilebtn { font-size: 40px !important; }
+
+/* найди ошибку */
+.errs { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+.errl { text-align: left; padding: 12px 14px; border-radius: 14px; background: var(--bg2); border: 2px solid var(--line); font-size: 26px; font-weight: 700; }
+
+/* ---------- шторка, тост, конфетти ---------- */
+#scrim { position: fixed; inset: 0; background: rgba(6, 3, 12, .6); opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 40; }
+#scrim.on { opacity: 1; pointer-events: auto; }
+#sheet { position: fixed; left: 0; right: 0; bottom: 0; z-index: 41; display: flex; justify-content: center; pointer-events: none; }
+#sheet .in {
+  pointer-events: auto; width: 100%; max-width: 520px; max-height: 84vh; max-height: 84dvh; overflow: auto;
+  background: var(--card); border-radius: 26px 26px 0 0; padding: 22px 18px calc(18px + env(safe-area-inset-bottom));
+  transform: translateY(105%); transition: transform .3s cubic-bezier(.2, .9, .3, 1.05); box-shadow: 0 -12px 40px rgba(0, 0, 0, .5);
+}
+#sheet.on .in { transform: none; }
+#sheet:not(.on) .in { visibility: hidden; transition: transform .3s, visibility 0s .3s; }
+.fb h3 { margin: 0 0 6px; font-size: 27px; }
+.fb.bad h3 { color: var(--badc); }
+.fb.good h3 { color: var(--okc); }
+.fb p { font-size: 21px; }
+.fb .q { font-size: 22px; font-weight: 600; }
+.fb-cat { float: right; margin: -6px -4px 0 8px; }
+.how { margin-top: 14px; color: var(--mute); font-weight: 800; font-size: 16px; text-transform: uppercase; letter-spacing: .07em; }
+.steps { margin: 6px 0 4px; padding-left: 26px; font-size: 22px; }
+.steps li { margin: 7px 0; }
+.hl { margin-top: 12px; font-weight: 700; color: var(--mute); }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+.two .btn { margin: 0; }
+.catinfo { text-align: center; }
+#toast { position: fixed; left: 0; right: 0; top: calc(env(safe-area-inset-top) + 62px); display: flex; justify-content: center; pointer-events: none; z-index: 60; padding: 0 16px; }
+#toast .t { max-width: 480px; padding: 12px 16px; border-radius: 16px; font-weight: 700; font-size: 19px; background: var(--card2); box-shadow: 0 10px 30px rgba(0, 0, 0, .45); transform: translateY(-14px); opacity: 0; transition: transform .22s, opacity .22s; }
+#toast.on .t { transform: none; opacity: 1; }
+#toast .t.ok { background: #15402e; color: #b5f7d3; }
+#toast .t.warn { background: #3d3112; color: #ffe39a; }
+#fx { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 70; display: none; }
+
+/* ---------- карта ---------- */
+.top { display: flex; justify-content: space-between; align-items: center; min-height: 48px; }
+.logo { font-size: 32px; font-weight: 900; letter-spacing: -.03em; }
+.logo span { color: var(--lime); }
+.hi, .says { display: flex; align-items: center; gap: 10px; margin: 8px 0; }
+.says { align-items: flex-start; margin: 6px 0 14px; }
+.cat { flex: none; display: block; }
+.bubble { position: relative; flex: 1; background: var(--card); padding: 11px 14px; border-radius: 16px; font-weight: 600; font-size: 19px; }
+.bubble::before { content: ""; position: absolute; left: -7px; top: 18px; border: 8px solid transparent; border-right-color: var(--card); border-left: 0; }
+.prize-bar { background: var(--card); border-radius: 18px; padding: 12px 14px; margin: 8px 0 4px; }
+.pb-t { display: flex; justify-content: space-between; font-size: 18px; color: var(--mute); }
+.pb-t b { color: var(--ink); }
+.pb { height: 10px; border-radius: 99px; background: var(--bg2); margin: 8px 0 6px; overflow: hidden; }
+.pb i { display: block; height: 100%; background: linear-gradient(90deg, var(--pink), var(--blue), var(--lime)); border-radius: 99px; }
+.pb-s { font-size: 16px; color: var(--dim); }
+.go { margin-top: 12px; }
+.day { margin-top: 16px; padding: 16px; border-radius: 22px; background: var(--card); border: 1px solid var(--line); position: relative; overflow: hidden; }
+.day::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 4px; background: var(--acc); }
+.day.locked { opacity: .5; }
+.dhead { display: flex; justify-content: space-between; font-size: 15px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; color: var(--acc); }
+.dok { color: var(--okc); }
+.day p { color: var(--mute); font-size: 18px; margin: 2px 0 12px; }
+.nodes { display: flex; flex-wrap: wrap; gap: 6px; }
+.node { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; font-weight: 900; font-size: 21px; background: var(--card2); border: 2px solid var(--line); }
+.node.open { border-color: var(--acc); color: var(--acc); }
+.node.cur { background: var(--acc); color: var(--acc-ink); animation: pulse 1.5s infinite; }
+.node.done { background: var(--bg2); border-color: var(--acc); }
+.node.boss { border-radius: 14px; font-size: 20px; }
+.node.done svg { width: 38px; height: 38px; }
+.node.lock { opacity: .55; }
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, .35); } 70% { box-shadow: 0 0 0 12px rgba(255, 255, 255, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); } }
+.links { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 18px; }
+.links button { background: var(--card); border-radius: 16px; padding: 14px 4px; font-size: 16px; font-weight: 700; }
+
+/* ---------- карточка уровня ---------- */
+.kick { font-size: 15px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; color: var(--acc); margin-top: 6px; }
+.rules { display: flex; flex-direction: column; gap: 8px; }
+.rule { background: var(--card); border-left: 4px solid var(--acc); border-radius: 14px; padding: 12px 14px; font-size: 21px; font-weight: 600; }
+.ex { margin-top: 12px; border-radius: 16px; padding: 12px 14px; font-size: 26px; font-weight: 700; }
+.ex-h { font-size: 15px; color: var(--mute); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 4px; font-weight: 800; }
+.ex-l { opacity: 0; animation: fadeup .5s forwards; padding: 2px 0; }
+@keyframes fadeup { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.goal { margin-top: 14px; color: var(--mute); font-size: 18px; }
+.reward { display: flex; align-items: center; gap: 10px; margin-top: 10px; font-size: 18px; color: var(--mute); }
+
+/* ---------- финалы ---------- */
+.center { text-align: center; padding-top: 10px; }
+.burst { display: grid; place-items: center; margin: 6px auto 0; width: 220px; height: 220px; border-radius: 50%; background: radial-gradient(circle, rgba(255, 255, 255, .13) 0%, transparent 68%); animation: popin .7s cubic-bezier(.2, .9, .3, 1.5); }
+@keyframes popin { from { transform: scale(.4) rotate(-12deg); opacity: 0; } to { transform: none; opacity: 1; } }
+.kicker { font-size: 16px; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; color: var(--acc); }
+.power { font-size: 21px; color: var(--mute); max-width: 380px; margin: 6px auto 14px; }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 14px 0; }
+.stats div { background: var(--card); border-radius: 16px; padding: 12px 4px; }
+.stats b { display: block; font-size: 32px; }
+.stats span { font-size: 15px; color: var(--mute); }
+.daydone { background: var(--card); border-radius: 16px; padding: 12px 14px; font-weight: 700; margin: 6px 0; }
+.catrow { display: flex; flex-wrap: wrap; justify-content: center; gap: 2px; margin: 8px 0 14px; }
+.prizebox { display: flex; gap: 12px; align-items: flex-start; text-align: left; background: linear-gradient(135deg, rgba(255, 79, 139, .2), rgba(74, 168, 255, .16)); border: 1px solid var(--line); border-radius: 18px; padding: 14px; font-size: 19px; margin: 12px 0; }
+.prizebox > span { font-size: 30px; line-height: 1; }
+.tipbox { background: #2d2610; color: #ffe39a; border-radius: 16px; padding: 12px 14px; font-size: 18px; text-align: left; margin: 10px 0; }
+.form label { display: block; text-align: left; font-size: 17px; color: var(--mute); font-weight: 700; margin-top: 12px; }
+.form input, .form textarea, .pinbox input {
+  display: block; width: 100%; margin-top: 6px; padding: 12px 14px; border-radius: 14px; border: 2px solid var(--line);
+  background: var(--bg2); color: var(--ink); font: inherit; font-size: 20px; resize: vertical;
+}
+.villain { vertical-align: middle; }
+
+/* ---------- коллекция, шпаргалка, мама ---------- */
+.catgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
+.catcard { background: var(--card); border-radius: 18px; padding: 10px 4px 12px; display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 17px; }
+.catcard svg { width: 76px; height: 76px; }
+.catcard.lock b { color: var(--dim); }
+.cs { background: var(--card); border-radius: 18px; padding: 14px 16px; margin-top: 12px; border-left: 4px solid var(--acc); }
+.cs h3 { margin: 0 0 6px; font-size: 21px; }
+.cs p { font-size: 19px; margin: 6px 0; }
+.csx { margin-top: 8px; padding: 8px 12px; border-radius: 12px; font-size: 22px; font-weight: 700; background: var(--bg2); }
+.kpi { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 10px 0; }
+.kpi div { background: var(--card); border-radius: 16px; padding: 12px 6px; text-align: center; }
+.kpi b { display: block; font-size: 30px; }
+.kpi span { font-size: 15px; color: var(--mute); }
+.tags, .lv, .days { list-style: none; padding: 0; margin: 0; }
+.tags li { background: var(--card); border-radius: 14px; padding: 10px 12px; margin-top: 8px; }
+.tg { display: flex; justify-content: space-between; gap: 8px; font-size: 18px; font-weight: 700; }
+.bar2 { height: 8px; border-radius: 99px; background: var(--bg2); margin: 8px 0 4px; overflow: hidden; }
+.bar2 i { display: block; height: 100%; background: var(--okc); border-radius: 99px; }
+.bar2 i.mid { background: var(--gold); } .bar2 i.low { background: var(--badc); }
+.tgn { font-size: 15px; color: var(--mute); }
+.lv li { display: flex; justify-content: space-between; gap: 8px; padding: 7px 2px; border-bottom: 1px solid var(--line); font-size: 18px; }
+.lv li.ok { color: var(--ink); } .lv li:not(.ok) { color: var(--mute); }
+.lv .n { color: var(--mute); white-space: nowrap; }
+.days li { padding: 4px 0; color: var(--mute); }
+.pinbox { margin-top: 18px; background: var(--card); border-radius: 16px; padding: 12px 14px; }
+.pinbox summary { font-weight: 700; color: var(--mute); }
+.order { background: var(--card); border-radius: 16px; padding: 12px 14px; white-space: pre-wrap; font-size: 18px; }
+
+@media (max-height: 720px) {
+  .k { height: 50px; font-size: 28px; }
+  .math { font-size: 34px; margin-bottom: 8px; }
+  .task.big .math { font-size: 42px; }
+  .ans { min-height: 58px; font-size: 32px; }
+  .note { font-size: 22px; }
+  .story { font-size: 19px; }
+  .lead.story-lead { font-size: 20px; }
+}
+@media (max-height: 690px) {
+  .k { height: 45px; font-size: 27px; }
+  .pad { gap: 6px; }
+  .spec { margin-bottom: 6px; }
+  .sp { padding: 8px 6px; }
+  .task, .task.big { padding: 12px 14px; }
+  .task.big .math { font-size: 36px; margin: 2px 0 8px; }
+  .hintbtn { margin-top: 8px; }
+  .bar { min-height: 44px; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } .ex-l { opacity: 1; } }
+
+/* ---------- живые чертежи ---------- */
+.figbox {
+  margin: 10px 0 6px; border-radius: 16px; padding: 4px; background-color: #0c0914;
+  background-image: linear-gradient(rgba(255, 255, 255, .05) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, .05) 1px, transparent 1px);
+  background-size: 20px 20px; border: 2px solid var(--line); transition: border-color .2s;
+}
+.figbox.drg { touch-action: none; }
+.figbox.tapb { touch-action: pan-y; }
+.figbox.right { border-color: var(--okc); }
+.fig { width: 100%; height: auto; display: block; -webkit-user-select: none; user-select: none; }
+.fig text { pointer-events: none; }
+.fig .lbl { font: 700 24px ui-rounded, "SF Pro Rounded", -apple-system, system-ui, sans-serif; fill: #fff; paint-order: stroke; stroke: #0c0914; stroke-width: 5px; stroke-linejoin: round; }
+.fig .lbl.it { font-family: "Iowan Old Style", Palatino, Georgia, serif; font-style: italic; font-size: 27px; }
+.fig .lbl.drag { fill: var(--acc); }
+.fig .lbl.ang { fill: #ffd34a; font-size: 21px; }
+.fig .lbl.ang.sm { font-size: 18px; }
+.fig .lbl.meas { fill: #cdc4e2; font-size: 18px; }
+.fig .lbl.ro { fill: var(--lime); font-size: 21px; font-weight: 800; }
+.fig .pr { font: 700 12px ui-rounded, system-ui, sans-serif; fill: rgba(255, 255, 255, .9); }
+.fig .pr.in { fill: rgba(255, 255, 255, .5); font-weight: 500; }
+.fig .handle { fill: rgba(255, 255, 255, .1); stroke: rgba(255, 255, 255, .55); stroke-width: 2; stroke-dasharray: 5 4; animation: breathe 1.6s ease-in-out infinite; }
+@keyframes breathe { 50% { r: 26; stroke-opacity: .35; } }
+.fig .hit { cursor: pointer; }
+.fig .hit.sel { stroke: #fff !important; stroke-width: 4 !important; filter: drop-shadow(0 0 6px rgba(255, 255, 255, .9)); }
+.fig circle.hit.sel { stroke-width: 4 !important; }
+.fig .hit.hot { filter: drop-shadow(0 0 8px var(--acc)); }
+.task:not(.big) .lead { margin-bottom: 2px; }
+.review { background: #2a2416; color: #ffe39a; border-radius: 14px; padding: 10px 14px; font-weight: 700; font-size: 17px; flex: none; }
+.ans .unit { color: var(--mute); font-size: 28px; margin-left: 2px; }
+.ans.nm .val.it i { font-style: normal; }
+.ans.nm .val { font-family: "Iowan Old Style", Palatino, Georgia, serif; font-style: italic; letter-spacing: .03em; }
+.ans.nm .pre { font-style: normal; font-family: inherit; }
+.pad.n3 { grid-template-columns: repeat(3, 1fr); }
+.pad.tiles { grid-template-columns: repeat(4, 1fr); margin-bottom: 10px; }
+.pad.tiles .k.var { font-family: "Iowan Old Style", Palatino, Georgia, serif; font-style: italic; font-weight: 700; }
+.pad.tiles .k.used { opacity: .3; }
+.foot .btn.big { margin-top: 8px; }
+.tags li.st-done { border-left: 4px solid var(--okc); }
+.tags li.st-work { border-left: 4px solid var(--gold); }
+.tags li.st-none { border-left: 4px solid var(--line); opacity: .75; }
+.villain { vertical-align: middle; }
+.stage.hasfig .task { margin: auto 0; }
+.fig .hitzone { cursor: pointer; }
+
+/* ---------- Икс-квест 2: прямая, знаки, отметки ---------- */
+.fig .lbl.tk { font-size: 18px; fill: #cdc4e2; }
+.fig .lbl.tk.z { fill: #ffd34a; font-weight: 900; }
+.fig .lbl.tk.st { fill: #ff86b0; font-size: 16px; }
+.signs { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 12px 0 4px; font-size: 32px; font-weight: 700; }
+.signs .pre { margin-right: 2px; }
+.sgn { display: inline-flex; align-items: center; gap: 4px; padding: 6px 10px 6px 6px; border-radius: 14px; background: var(--bg2); border: 2px solid var(--line); font-size: 30px; font-weight: 700; }
+.sgn b { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 11px; background: #2c2147; color: #b5f7d3; font-size: 32px; }
+.sgn.neg b { color: var(--minus); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 4px; }
+.chip { padding: 10px 14px; border-radius: 14px; background: var(--card2); border: 2px solid var(--line); font-size: 27px; font-weight: 800; min-width: 60px; }
+.chip.on { border-color: var(--acc); background: rgba(255, 255, 255, .1); box-shadow: 0 0 0 3px rgba(255, 255, 255, .15); }
+.side .chip { font-size: 24px; padding: 8px 10px; min-width: 50px; }
+
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="scrim"></div>
+<div id="sheet"><div class="in"></div></div>
+<div id="toast"></div>
+<canvas id="fx"></canvas>
+<script>
+/* Икс-квест — математика: точные дроби, линейные выражения, разбор ввода, вёрстка формул.
+   Работает и в браузере (глобальный XM), и в Node (module.exports) — для тестов. */
+(function (root) {
+'use strict';
+
+function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { const t = a % b; a = b; b = t; } return a || 1; }
+
+/* ---------- Q: точная дробь n/d ---------- */
+class Q {
+  constructor(n, d = 1) {
+    if (!Number.isInteger(n) || !Number.isInteger(d) || d === 0) throw new Error(`bad Q ${n}/${d}`);
+    if (d < 0) { n = -n; d = -d; }
+    const g = gcd(n, d);
+    this.n = n / g || 0;      // || 0 убирает −0
+    this.d = d / g;
+  }
+  static of(x) {
+    if (x instanceof Q) return x;
+    if (typeof x === 'number') {
+      if (Number.isInteger(x)) return new Q(x, 1);
+      const s = String(x);
+      if (/e/i.test(s)) throw new Error('Q.of: ' + s);
+      const k = s.split('.')[1].length;
+      return new Q(Math.round(x * 10 ** k), 10 ** k);
+    }
+    throw new Error('Q.of: ' + x);
+  }
+  add(o) { o = Q.of(o); return new Q(this.n * o.d + o.n * this.d, this.d * o.d); }
+  sub(o) { o = Q.of(o); return new Q(this.n * o.d - o.n * this.d, this.d * o.d); }
+  mul(o) { o = Q.of(o); return new Q(this.n * o.n, this.d * o.d); }
+  div(o) { o = Q.of(o); if (o.n === 0) throw new Error('div0'); return new Q(this.n * o.d, this.d * o.n); }
+  neg() { return new Q(-this.n, this.d); }
+  abs() { return new Q(Math.abs(this.n), this.d); }
+  eq(o) { o = Q.of(o); return this.n === o.n && this.d === o.d; }
+  isZero() { return this.n === 0; }
+  isInt() { return this.d === 1; }
+  sign() { return Math.sign(this.n); }
+  lt(o) { o = Q.of(o); return this.n * o.d < o.n * this.d; }
+  num() { return this.n / this.d; }
+}
+const ZERO = new Q(0), ONE = new Q(1);
+
+/* Сколько знаков после запятой у конечной десятичной дроби; −1 — если бесконечная. */
+function decDigits(q) {
+  let d = q.d, two = 0, five = 0;
+  while (d % 2 === 0) { d /= 2; two++; }
+  while (d % 5 === 0) { d /= 5; five++; }
+  return d === 1 ? Math.max(two, five) : -1;
+}
+
+/* ---------- Мини-разметка формул ----------
+   «-» — минус, «*» — точка умножения, {n/d} — дробь столбиком, латинские буквы — переменные.
+   В тексте формулы берутся в `обратные кавычки`. */
+function fmtAbs(q) {
+  if (q.d === 1) return String(q.n);
+  const k = decDigits(q);
+  if (k > 0 && k <= 3) return (q.n / q.d).toFixed(k).replace(/0+$/, '').replace('.', ',');
+  return `{${q.n}/${q.d}}`;
+}
+function fmtNum(q) { q = Q.of(q); return q.sign() < 0 ? '-' + fmtAbs(q.neg()) : fmtAbs(q); }
+/* Число в скобках, если отрицательное: 0,3 * (-9) */
+function fmtPar(q) { q = Q.of(q); return q.sign() < 0 ? `(${fmtNum(q)})` : fmtNum(q); }
+
+/* Абсолютная часть слагаемого: 3x, x, 0,5a, {1/3}x, 7 */
+function termAbs(t) {
+  const a = Q.of(t.c).abs();
+  if (!t.v) return fmtAbs(a);
+  if (a.eq(1)) return t.v;
+  return fmtAbs(a) + t.v;
+}
+/* Ряд слагаемых: первый без «+», дальше « + » / « - ». */
+function fmtTerms(terms) {
+  if (!terms.length) return '0';
+  return terms.map((t, i) => {
+    const neg = Q.of(t.c).sign() < 0;
+    if (i === 0) return (neg ? '-' : '') + termAbs(t);
+    return (neg ? ' - ' : ' + ') + termAbs(t);
+  }).join('');
+}
+/* Слагаемое со знаком всегда — для плиток: +3x, −8 */
+function fmtSigned(t) { return (Q.of(t.c).sign() < 0 ? '-' : '+') + termAbs(t); }
+
+/* ---------- Lin: линейное выражение Σ k·v + c ---------- */
+class Lin {
+  constructor(m = {}, c = 0) {
+    this.m = {};
+    for (const v of Object.keys(m)) { const q = Q.of(m[v]); if (!q.isZero()) this.m[v] = q; }
+    this.c = Q.of(c);
+  }
+  static term(v, c) { return v ? new Lin({ [v]: c }) : new Lin({}, c); }
+  static ofTerms(terms) { return terms.reduce((s, t) => s.add(Lin.term(t.v, t.c)), new Lin()); }
+  coef(v) { return v ? (this.m[v] || ZERO) : this.c; }
+  vars() { return Object.keys(this.m).sort(); }
+  add(o) {
+    const m = { ...this.m };
+    for (const v of Object.keys(o.m)) m[v] = (m[v] || ZERO).add(o.m[v]);
+    return new Lin(m, this.c.add(o.c));
+  }
+  scale(k) {
+    k = Q.of(k);
+    const m = {};
+    for (const v of Object.keys(this.m)) m[v] = this.m[v].mul(k);
+    return new Lin(m, this.c.mul(k));
+  }
+  sub(o) { return this.add(o.scale(-1)); }
+  isZero() { return !this.vars().length && this.c.isZero(); }
+  isConst() { return !this.vars().length; }
+  eq(o) {
+    const a = this.vars(), b = o.vars();
+    return a.length === b.length && a.every((v, i) => v === b[i] && this.m[v].eq(o.m[v])) && this.c.eq(o.c);
+  }
+  evalAt(env) {
+    let s = this.c;
+    for (const v of this.vars()) s = s.add(this.m[v].mul(env[v]));
+    return s;
+  }
+  terms(order) {
+    const vs = order ? order.filter(v => this.m[v]).concat(this.vars().filter(v => !order.includes(v))) : this.vars();
+    const out = vs.map(v => ({ v, c: this.m[v] }));
+    if (!this.c.isZero()) out.push({ v: '', c: this.c });
+    return out;
+  }
+  fmt(order) { return fmtTerms(this.terms(order)); }
+}
+
+/* ---------- Разбор того, что она набрала ----------
+   Понимает: 12, -7, 0,5, 9/7, 3a-b, -x+9, 22b - 7, x/3, 1/3x.
+   Возвращает { ok, terms, lin, reduced } или { ok:false, err }. */
+function parseInput(raw) {
+  const s = String(raw).replace(/\s+/g, '').replace(/[−–—]/g, '-').replace(/\./g, ',');
+  const fail = err => ({ ok: false, err });
+  if (!s) return fail('Сначала введи ответ');
+  const terms = [];
+  let i = 0;
+  while (i < s.length) {
+    let sign = 1;
+    if (s[i] === '+' || s[i] === '-') {
+      sign = s[i] === '-' ? -1 : 1; i++;
+      if (s[i] === '+' || s[i] === '-') return fail('Два знака подряд — оставь один');
+      if (i >= s.length) return fail('В конце висит знак — допиши или сотри');
+    } else if (terms.length) return fail('Не понимаю запись');
+    let num = null;
+    const mNum = /^\d+(,\d+)?/.exec(s.slice(i));
+    if (mNum) {
+      const [int, frac = ''] = mNum[0].split(',');
+      num = new Q(parseInt(int + frac, 10), 10 ** frac.length);
+      i += mNum[0].length;
+      if (s[i] === '/') {
+        const m2 = /^\/(\d+)/.exec(s.slice(i));
+        if (!m2) return fail('После «/» нужно число');
+        if (+m2[1] === 0) return fail('На ноль делить нельзя');
+        num = num.div(+m2[1]); i += m2[0].length;
+      }
+    } else if (s[i] === ',') return fail('Запятая без цифры впереди');
+    let v = '';
+    if (/[a-z]/.test(s[i] || '')) {
+      v = s[i]; i++;
+      if (s[i] === '/') {
+        const m3 = /^\/(\d+)/.exec(s.slice(i));
+        if (!m3) return fail('После «/» нужно число');
+        if (+m3[1] === 0) return fail('На ноль делить нельзя');
+        num = (num || ONE).div(+m3[1]); i += m3[0].length;
+      }
+    }
+    if (num === null && !v) return fail('Не понимаю запись');
+    if (i < s.length && s[i] !== '+' && s[i] !== '-') {
+      if (s[i] === ',') return fail('Лишняя запятая');
+      return fail('Не понимаю запись — между частями нужен знак');
+    }
+    terms.push({ v, c: (num || ONE).mul(sign) });
+  }
+  const seen = {};
+  let reduced = true;
+  for (const t of terms) {
+    if (seen[t.v]) reduced = false;
+    seen[t.v] = true;
+    if (t.c.isZero() && terms.length > 1) reduced = false;
+  }
+  return { ok: true, terms, lin: Lin.ofTerms(terms), reduced };
+}
+
+/* ---------- HTML ---------- */
+function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+const OPS = new Set(['+', '-', '−', '=', ':', '*', '·', '→', '<', '>']);
+
+function atomHTML(s) {
+  let out = '';
+  for (let i = 0; i < s.length; i++) {
+    const ch = s[i];
+    if (ch === '{') {
+      const j = s.indexOf('}', i);
+      const [a, b] = s.slice(i + 1, j).split('/');
+      out += `<span class="fr"><span>${atomHTML(a)}</span><span>${atomHTML(b)}</span></span>`;
+      i = j; continue;
+    }
+    if (ch === '-' || ch === '−') { out += '<span class="mn">−</span>'; continue; }
+    if (ch === '*') { out += '·'; continue; }
+    if (/[a-z]/.test(ch)) { out += `<i>${ch}</i>`; continue; }
+    out += esc(ch);
+  }
+  return out;
+}
+/* Формула: знак операции приклеен к следующему числу, перенос строки — только перед знаком. */
+function mathHTML(s) {
+  const tok = String(s).split(' ').filter(x => x !== '');
+  const parts = [];
+  for (let k = 0; k < tok.length; k++) {
+    if (OPS.has(tok[k]) && k + 1 < tok.length) { parts.push(`<span class="nw">${atomHTML(tok[k])} ${atomHTML(tok[k + 1])}</span>`); k++; }
+    else parts.push(`<span class="nw">${atomHTML(tok[k])}</span>`);
+  }
+  return parts.join(' ');
+}
+/* Текст с формулами в `кавычках`. */
+function richHTML(s) {
+  return String(s).split('`').map((seg, i) => i % 2 ? `<span class="m">${mathHTML(seg)}</span>` : esc(seg)).join('');
+}
+/* Плоский текст для отчёта/«поделиться»: без разметки. */
+function plain(s) {
+  return String(s).replace(/`/g, '').replace(/\{(-?[^/{}]+)\/([^{}]+)\}/g, '$1/$2').replace(/ - /g, ' − ').replace(/(^|[\s(=])-/g, '$1−').replace(/\*/g, '·');
+}
+
+const XM = { Q, ZERO, ONE, Lin, gcd, decDigits, fmtAbs, fmtNum, fmtPar, termAbs, fmtTerms, fmtSigned, parseInput, esc, mathHTML, richHTML, atomHTML, plain };
+if (typeof module !== 'undefined' && module.exports) module.exports = XM;
+else root.XM = XM;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>
+/* Гео-квест — геометрия и живые чертежи.
+   Сцена: точки + элементы (прямая, луч, отрезок, дуга угла, транспортир, треугольник…) в координатах
+   viewBox 0 0 320 H. Рисуется в SVG, точки можно таскать пальцем (pointer events) с ограничениями:
+   по кругу вокруг вершины (повернуть луч), вдоль луча (удлинить), по отрезку (середина), свободно.
+   Работает и в браузере (GEO), и в Node — для тестов. */
+(function (root) {
+'use strict';
+
+const W = 320;
+const INK = '#2f7dd6';      // чернильно-синий, как линии в учебнике
+const INK2 = '#d9def2';     // «чёрные» линии учебника — на тёмном фоне светлые
+const PINK = '#ff4f8b', LIME = '#8fd14f', GOLD = '#ffcf4a', DIM = '#8b86a0';
+const FILLS = { blue: 'rgba(47,125,214,.22)', pink: 'rgba(255,79,139,.25)', lime: 'rgba(143,209,79,.28)', gold: 'rgba(255,207,74,.3)', grey: 'rgba(139,134,160,.22)' };
+const STROKES = { blue: INK, pink: PINK, lime: LIME, gold: GOLD, grey: DIM, ink: INK2 };
+
+/* ---------- геометрия ---------- */
+const rad = d => (d * Math.PI) / 180;
+const degOf = r => (r * 180) / Math.PI;
+const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+/* направление луча v→a в градусах, против часовой стрелки на экране (ось y вниз учтена) */
+function dir(v, a) { let d = degOf(Math.atan2(-(a.y - v.y), a.x - v.x)); if (d < 0) d += 360; return d; }
+const polar = (v, ang, r) => ({ x: v.x + r * Math.cos(rad(ang)), y: v.y - r * Math.sin(rad(ang)) });
+/* угол между лучами v→a и v→b, 0…180 */
+function ang(v, a, b) { let d = Math.abs(dir(v, a) - dir(v, b)); if (d > 180) d = 360 - d; return d; }
+/* угол от луча v→a к лучу v→b против часовой, 0…360 */
+function ccw(v, a, b) { let d = dir(v, b) - dir(v, a); if (d < 0) d += 360; return d; }
+const mid = (a, b) => ({ x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 });
+const lerp = (a, b, t) => ({ x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t });
+/* проекция p на прямую ab: параметр t */
+function projT(a, b, p) { const dx = b.x - a.x, dy = b.y - a.y, L = dx * dx + dy * dy; return L ? ((p.x - a.x) * dx + (p.y - a.y) * dy) / L : 0; }
+/* где луч v→a упирается в рамку viewBox */
+function rayEnd(v, a, H, pad = 0) {
+  const dx = a.x - v.x, dy = a.y - v.y;
+  let t = Infinity;
+  if (dx > 0) t = Math.min(t, (W - pad - v.x) / dx); if (dx < 0) t = Math.min(t, (pad - v.x) / dx);
+  if (dy > 0) t = Math.min(t, (H - pad - v.y) / dy); if (dy < 0) t = Math.min(t, (pad - v.y) / dy);
+  if (!isFinite(t)) t = 1;
+  return { x: v.x + dx * t, y: v.y + dy * t };
+}
+const round = (x, k = 1) => Math.round(x / k) * k;
+const fmtDeg = d => `${Math.round(d)}°`;
+/* перевод буквенного угла: вершина — вторая буква */
+const angleName = (a, v, b) => `∠${a}${v}${b}`;
+
+/* ---------- разметка SVG ---------- */
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const n2 = x => (Math.round(x * 100) / 100).toString();
+function labelHTML(p, text, dx, dy, cls = '') {
+  const it = /^[A-Za-z]$/.test(text) || /^[a-z]\d?$/.test(text);
+  return `<text class="lbl ${cls}${it ? ' it' : ''}" x="${n2(p.x + dx)}" y="${n2(p.y + dy)}" text-anchor="middle" dominant-baseline="central">${esc(text)}</text>`;
+}
+/* умная подпись: отодвигаем от «центра масс» соседних точек */
+function autoOff(p, others, d = 19) {
+  if (!others.length) return { dx: d * 0.7, dy: -d * 0.7 };
+  let sx = 0, sy = 0;
+  for (const o of others) { const L = dist(p, o) || 1; sx += (p.x - o.x) / L; sy += (p.y - o.y) / L; }
+  const L = Math.hypot(sx, sy);
+  if (L < 0.2) return { dx: 0, dy: -d };
+  return { dx: (sx / L) * d, dy: (sy / L) * d };
+}
+function arcPath(v, from, to, r) {        // дуга от направления from до to против часовой
+  let sweep = to - from; if (sweep < 0) sweep += 360;
+  const p1 = polar(v, from, r), p2 = polar(v, to, r);
+  if (sweep >= 359.5) return `M${n2(p1.x)} ${n2(p1.y)} A${r} ${r} 0 1 0 ${n2(v.x - r)} ${n2(v.y)} A${r} ${r} 0 1 0 ${n2(p1.x)} ${n2(p1.y)}`;
+  return `M${n2(p1.x)} ${n2(p1.y)} A${r} ${r} 0 ${sweep > 180 ? 1 : 0} 0 ${n2(p2.x)} ${n2(p2.y)}`;
+}
+
+/* Элементы сцены:
+   {t:'line',a,b}  {t:'ray',a,b}  {t:'seg',a,b}  {t:'pt',id,dx,dy,hide}  {t:'tri',a,b,c}
+   {t:'arc',v,a,b,r,color,label,id,fill}  — дуга угла от луча v→a к лучу v→b (короткая сторона или `ccw:true`)
+   {t:'right',v,a,b}  {t:'protractor',v,a,b,r}  {t:'text',x,y,s,cls}  {t:'tick',a,b,n}  {t:'hit',id,kind,...}
+   Любой элемент с id можно сделать нажимаемым (sel: массив id выбранных). */
+function render(scene, opt = {}) {
+  const P = scene.points, H = scene.h || 240;
+  const sel = new Set(opt.sel || []), hot = new Set(opt.hot || []);
+  const out = [], top = [], labels = [];
+  const col = c => STROKES[c] || c || INK;
+  const stroke = (el, def) => col(el.color || def);
+  const cls = el => (el.id ? ` id="el-${el.id}" data-id="${el.id}" class="hit${sel.has(el.id) ? ' sel' : ''}${hot.has(el.id) ? ' hot' : ''}"` : '');
+  const hitLine = (el, p, q) => { if (el.id) top.push(`<line class="hitzone" data-id="${el.id}" x1="${n2(p.x)}" y1="${n2(p.y)}" x2="${n2(q.x)}" y2="${n2(q.y)}" stroke="rgba(0,0,0,0.001)" stroke-width="30" stroke-linecap="round"/>`); };
+  for (const el of scene.items) {
+    if (el.t === 'line') {
+      const a = P[el.a], b = P[el.b], e1 = rayEnd(a, b, H), e2 = rayEnd(b, a, H);
+      out.push(`<line${cls(el)} x1="${n2(e1.x)}" y1="${n2(e1.y)}" x2="${n2(e2.x)}" y2="${n2(e2.y)}" stroke="${stroke(el, INK2)}" stroke-width="${el.w || 3}" stroke-linecap="round"/>`); hitLine(el, e1, e2);
+    } else if (el.t === 'ray') {
+      const a = P[el.a], b = P[el.b], e = el.len ? polar(a, dir(a, b), el.len) : rayEnd(a, b, H);
+      out.push(`<line${cls(el)} x1="${n2(a.x)}" y1="${n2(a.y)}" x2="${n2(e.x)}" y2="${n2(e.y)}" stroke="${stroke(el, INK)}" stroke-width="${el.w || 3.5}" stroke-linecap="round"${el.dash ? ' stroke-dasharray="7 6"' : ''}/>`); hitLine(el, a, e);
+    } else if (el.t === 'seg') {
+      const a = P[el.a], b = P[el.b];
+      out.push(`<line${cls(el)} x1="${n2(a.x)}" y1="${n2(a.y)}" x2="${n2(b.x)}" y2="${n2(b.y)}" stroke="${stroke(el, INK)}" stroke-width="${el.w || 3.5}" stroke-linecap="round"${el.dash ? ' stroke-dasharray="7 6"' : ''}/>`); if (!(el.w < 0.1)) hitLine(el, a, b);
+      if (el.len) { const m = mid(a, b), d = dir(a, b), off = polar({ x: 0, y: 0 }, d + 90, 16); labels.push(labelHTML(m, el.len, off.x, off.y, 'meas')); }
+    } else if (el.t === 'tri') {
+      const a = P[el.a], b = P[el.b], c = P[el.c];
+      out.push(`<polygon${cls(el)} points="${n2(a.x)},${n2(a.y)} ${n2(b.x)},${n2(b.y)} ${n2(c.x)},${n2(c.y)}" fill="${el.fill ? FILLS[el.fill] || el.fill : 'none'}" stroke="${stroke(el, INK)}" stroke-width="${el.w || 3.5}" stroke-linejoin="round"/>`);
+    } else if (el.t === 'arc') {
+      const v = P[el.v], a = P[el.a], b = P[el.b];
+      let from = dir(v, a), to = dir(v, b);
+      if (!el.ccw) { const c = ccw(v, a, b); if (c > 180) [from, to] = [to, from]; }
+      const r = el.r || 30, path = arcPath(v, from, to, r);
+      const c = el.color || 'blue';
+      if (el.fill !== false) out.push(`<path${cls(el)} d="${path} L${n2(v.x)} ${n2(v.y)} Z" fill="${FILLS[c] || c}" stroke="none"/>`);
+      top.push(`<path d="${path}" fill="none" stroke="${col(c)}" stroke-width="${el.w || 3}" stroke-linecap="round"${el.n ? '' : ''}/>`);
+      if (el.n === 2) top.push(`<path d="${arcPath(v, from, to, r - 7)}" fill="none" stroke="${col(c)}" stroke-width="2.5"/>`);
+      if (el.label != null) {
+        let sweep = to - from; if (sweep < 0) sweep += 360;
+        const m = polar(v, from + sweep / 2, r + (el.lr || 22));
+        labels.push(labelHTML(m, el.label, 0, 0, 'ang' + (String(el.label).length > 3 ? ' sm' : '')));
+      }
+    } else if (el.t === 'right') {
+      const v = P[el.v], d1 = dir(v, P[el.a]), d2 = dir(v, P[el.b]), s = el.r || 14;
+      const p1 = polar(v, d1, s), p2 = polar(v, d2, s), p3 = { x: p1.x + p2.x - v.x, y: p1.y + p2.y - v.y };
+      top.push(`<path d="M${n2(p1.x)} ${n2(p1.y)} L${n2(p3.x)} ${n2(p3.y)} L${n2(p2.x)} ${n2(p2.y)}" fill="none" stroke="${stroke(el, INK2)}" stroke-width="2.5"/>`);
+    } else if (el.t === 'protractor') {
+      out.push(protractorHTML(P[el.v], dir(P[el.v], P[el.a]), P[el.b] ? dir(P[el.v], P[el.b]) : null, el.r || 118, el.one));
+    } else if (el.t === 'tick') {
+      const a = P[el.a], b = P[el.b], m = mid(a, b), d = dir(a, b), n = el.n || 1;
+      for (let i = 0; i < n; i++) {
+        const c = polar(m, d, (i - (n - 1) / 2) * 7), p1 = polar(c, d + 90, 7), p2 = polar(c, d - 90, 7);
+        top.push(`<line x1="${n2(p1.x)}" y1="${n2(p1.y)}" x2="${n2(p2.x)}" y2="${n2(p2.y)}" stroke="${stroke(el, INK2)}" stroke-width="2.5"/>`);
+      }
+    } else if (el.t === 'text') {
+      labels.push(`<text class="lbl ${el.cls || ''}" x="${n2(el.x)}" y="${n2(el.y)}" text-anchor="${el.anchor || 'middle'}" dominant-baseline="central">${esc(el.s)}</text>`);
+    } else if (el.t === 'region') {
+      // область, которую можно нажать: кружок-мишень
+      const p = P[el.p];
+      if (el.r && el.r < 0.1) continue;
+      top.push(`<circle${cls(el)} cx="${n2(p.x)}" cy="${n2(p.y)}" r="${el.r || 9}" fill="${el.color ? col(el.color) : INK2}" stroke="#fff" stroke-width="2"/>`);
+      top.push(`<circle class="hitzone" data-id="${el.id}" cx="${n2(p.x)}" cy="${n2(p.y)}" r="22" fill="rgba(0,0,0,0.001)"/>`);
+      if (el.label !== '') labels.push(labelHTML(p, el.label || el.p, el.dx == null ? 16 : el.dx, el.dy == null ? -14 : el.dy));
+    }
+  }
+  // точки — поверх линий
+  for (const el of scene.items) {
+    if (el.t !== 'pt') continue;
+    const p = P[el.id];
+    const dr = scene.drag && scene.drag[el.id];
+    const r = el.r || (dr ? 8 : 5.5);
+    if (!el.hide) top.push(`<circle${cls(el)} cx="${n2(p.x)}" cy="${n2(p.y)}" r="${r}" fill="${el.open ? '#fff' : stroke(el, INK2)}" stroke="${stroke(el, INK2)}" stroke-width="${el.open ? 3 : 0}"/>`);
+    if (dr && !opt.still) top.push(`<circle class="handle" cx="${n2(p.x)}" cy="${n2(p.y)}" r="22"/>`);
+    if (el.id && !dr && scene.items.some(x => x.t === 'pt' && x.id === el.id) && !el.hide) top.push(`<circle class="hitzone" data-id="${el.id}" cx="${n2(p.x)}" cy="${n2(p.y)}" r="22" fill="rgba(0,0,0,0.001)"/>`);
+    if (el.label !== false) {
+      const text = el.label || el.id;
+      let dx = el.dx, dy = el.dy;
+      if (dx == null) { const o = autoOff(p, neighbours(scene, el.id)); dx = o.dx; dy = o.dy; }
+      labels.push(labelHTML(p, text, dx, dy, dr ? 'drag' : ''));
+    }
+  }
+  const extra = opt.extra || '';
+  return `<svg class="fig" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">${scene.bg ? `<rect width="${W}" height="${H}" fill="${scene.bg}"/>` : ''}${out.join('')}${top.join('')}${labels.join('')}${extra}</svg>`;
+}
+function neighbours(scene, id) {
+  const P = scene.points, res = [];
+  for (const el of scene.items) {
+    if (['line', 'ray', 'seg'].includes(el.t)) { if (el.a === id) res.push(P[el.b]); if (el.b === id) res.push(P[el.a]); }
+    if (el.t === 'tri') { for (const k of ['a', 'b', 'c']) if (el[k] === id) for (const j of ['a', 'b', 'c']) if (j !== k) res.push(P[el[j]]); }
+  }
+  return res;
+}
+/* Транспортир: полукруг с двумя шкалами. База — вдоль луча base (градусы), полукруг — в сторону луча side. */
+function protractorHTML(v, base, side, R, one) {
+  // полукруг лежит против часовой от base, если side в пределах base..base+180, иначе — по часовой (отражаем)
+  let flip = false;
+  if (side != null) { let d = side - base; if (d < 0) d += 360; flip = d > 180; }
+  const s = flip ? -1 : 1;
+  const at = (deg, r) => polar(v, base + s * deg, r);
+  const g = [];
+  const outer = at(0, R), outer2 = at(180, R);
+  g.push(`<path d="M${n2(outer.x)} ${n2(outer.y)} A${R} ${R} 0 0 ${flip ? 1 : 0} ${n2(outer2.x)} ${n2(outer2.y)} Z" fill="rgba(255,255,255,.07)" stroke="rgba(255,255,255,.55)" stroke-width="2"/>`);
+  const ri = R - 52, in1 = at(0, ri), in2 = at(180, ri);
+  g.push(`<path d="M${n2(in1.x)} ${n2(in1.y)} A${ri} ${ri} 0 0 ${flip ? 1 : 0} ${n2(in2.x)} ${n2(in2.y)}" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.5"/>`);
+  for (let d = 0; d <= 180; d += 5) {
+    const long = d % 10 === 0, big = d % 20 === 0;
+    const p1 = at(d, R), p2 = at(d, R - (big ? 14 : long ? 10 : 6));
+    g.push(`<line x1="${n2(p1.x)}" y1="${n2(p1.y)}" x2="${n2(p2.x)}" y2="${n2(p2.y)}" stroke="rgba(255,255,255,${big ? '.85' : '.5'})" stroke-width="${big ? 2 : 1.2}"/>`);
+    if (d % 20 === 0) {
+      const po = at(d, R - 24), pi = at(d, R - 42);
+      g.push(`<text class="pr" x="${n2(po.x)}" y="${n2(po.y)}" text-anchor="middle" dominant-baseline="central">${d}</text>`);
+      if (!one) g.push(`<text class="pr in" x="${n2(pi.x)}" y="${n2(pi.y)}" text-anchor="middle" dominant-baseline="central">${180 - d}</text>`);
+    }
+  }
+  g.push(`<circle cx="${n2(v.x)}" cy="${n2(v.y)}" r="3" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="1.5"/>`);
+  return `<g class="protr">${g.join('')}</g>`;
+}
+
+/* ---------- интерактив ---------- */
+/* Ограничения перетаскивания scene.drag[id]:
+   {k:'rot', v:'O', r?:число}  — вращение вокруг точки v на фиксированном радиусе (повернуть луч)
+   {k:'along', v:'O'}          — вдоль луча v→id (удлинить/укоротить), r от 30 до края
+   {k:'seg', a:'A', b:'B'}     — по отрезку ab
+   {k:'free'}                  — свободно (в рамке)
+   {k:'line', a, b}            — по прямой ab (и за концы) */
+function applyDrag(scene, id, p) {
+  const c = scene.drag[id], P = scene.points, H = scene.h || 240;
+  const clamp = q => ({ x: Math.min(W - 10, Math.max(10, q.x)), y: Math.min(H - 10, Math.max(10, q.y)) });
+  if (c.k === 'rot') { const v = P[c.v]; const r = c.r || dist(v, P[id]); const d = c.snap ? round(dir(v, p), c.snap) : dir(v, p); return polar(v, d, r); }
+  if (c.k === 'along') { const v = P[c.v], d = dir(v, P[id]); const r = Math.max(c.min || 30, Math.min(c.max || 300, dist(v, p) * Math.cos(rad(dir(v, p) - d)))); return polar(v, d, r); }
+  if (c.k === 'seg') { const a = P[c.a], b = P[c.b]; const t = Math.max(0.02, Math.min(0.98, projT(a, b, p))); return lerp(a, b, t); }
+  if (c.k === 'line') { const a = P[c.a], b = P[c.b]; return clamp(lerp(a, b, projT(a, b, p))); }
+  return clamp(p);
+}
+
+/* mount(container, scene, {onChange, onTap, sel}) → контроллер {update(opt), scene, destroy} */
+function mount(el, scene, h = {}) {
+  const st = { sel: new Set(h.sel || []), hot: new Set(), extra: h.extra || '' };
+  let active = null, moved = false;
+  const draw = () => { el.innerHTML = render(scene, { sel: [...st.sel], hot: [...st.hot], extra: typeof st.extra === 'function' ? st.extra(scene.points) : st.extra, still: h.still }); };
+  draw();
+  const svgPt = e => {
+    const svg = el.querySelector('svg'); if (!svg) return null;
+    const r = svg.getBoundingClientRect();
+    return { x: ((e.clientX - r.left) / r.width) * W, y: ((e.clientY - r.top) / r.height) * (scene.h || 240) };
+  };
+  const nearest = p => {
+    let best = null, bd = 34;
+    for (const id of Object.keys(scene.drag || {})) { const d = dist(scene.points[id], p); if (d < bd) { bd = d; best = id; } }
+    return best;
+  };
+  const down = e => {
+    if (h.locked && h.locked()) return;
+    const p = svgPt(e); if (!p) return;
+    const id = nearest(p);
+    moved = false;
+    if (id) { active = id; st.hot = new Set([id]); el.setPointerCapture && el.setPointerCapture(e.pointerId); e.preventDefault(); draw(); }
+  };
+  const move = e => {
+    if (!active) return;
+    const p = svgPt(e); if (!p) return;
+    const q = applyDrag(scene, active, p);
+    if (dist(q, scene.points[active]) < 0.01) return;
+    scene.points[active] = q; moved = true;
+    if (scene.after) scene.after(active);
+    draw();
+    if (h.onChange) h.onChange(active, scene.points);
+  };
+  const up = e => {
+    if (active) { const id = active; active = null; st.hot = new Set(); draw(); if (h.onDrop) h.onDrop(id, scene.points, moved); return; }
+    const t = e.target.closest && e.target.closest('[data-id]');
+    if (t && h.onTap) { h.onTap(t.dataset.id); }
+  };
+  el.addEventListener('pointerdown', down);
+  el.addEventListener('pointermove', move);
+  el.addEventListener('pointerup', up);
+  el.addEventListener('pointercancel', () => { active = null; st.hot = new Set(); draw(); });
+  el.addEventListener('click', e => { /* клик уже обработан в pointerup */ e.preventDefault(); });
+  return {
+    scene,
+    update(o = {}) { if (o.sel) st.sel = new Set(o.sel); if (o.extra != null) st.extra = o.extra; draw(); },
+    toggle(id, multi) { if (st.sel.has(id)) st.sel.delete(id); else { if (!multi) st.sel.clear(); st.sel.add(id); } draw(); return [...st.sel]; },
+    sel: () => [...st.sel],
+    draw,
+  };
+}
+
+/* Большая живая подпись (например, «∠AOB = 65°») внутри svg через opt.extra */
+const readout = (text, x = 160, y = 22) => `<text class="lbl ro" x="${x}" y="${y}" text-anchor="middle" dominant-baseline="central">${esc(text)}</text>`;
+
+const GEO = { W, INK, INK2, PINK, LIME, GOLD, dist, dir, polar, ang, ccw, mid, lerp, projT, rayEnd, round, fmtDeg, angleName, render, mount, applyDrag, readout, protractorHTML, esc };
+if (typeof module !== 'undefined' && module.exports) module.exports = GEO; else root.GEO = GEO;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>
+/* Икс-квест 2 — темы, формы заданий, ловушки, разборы.
+   Четыре темы из отчёта «Икс-квеста», где Эва ошибалась: сложение и вычитание с минусом,
+   раскрытие скобок, подобные слагаемые, перенос через «=». Учебник — Макарычев, 7 класс.
+   Формы: num (посчитай), expr (запиши выражение), line (числовая прямая, тянуть пальцем),
+   predict (предскажи → проверь на прямой), choice / tf, finderr, signs (расставь знаки),
+   pick (отметь на экране), tiles (перенеси плитки через «=»). */
+(function (root) {
+'use strict';
+const XM = root.XM || require('./math.js');
+const GEO = root.GEO || require('./geo.js');
+const { Q, Lin, fmtNum, fmtPar, fmtAbs, fmtTerms, fmtSigned, termAbs } = XM;
+
+/* ---------- случайность ---------- */
+const rnd = {
+  int: (a, b) => a + Math.floor(Math.random() * (b - a + 1)),
+  pick: arr => arr[Math.floor(Math.random() * arr.length)],
+  p: x => Math.random() < x,
+  sgn: () => (Math.random() < 0.5 ? -1 : 1),
+  nz(a, b) { let x; do { x = rnd.int(a, b); } while (x === 0); return x; },
+  shuffle(arr) { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; },
+};
+const m = s => '`' + s + '`';
+const nice = (q, k = 2) => { const d = XM.decDigits(q); return d >= 0 && d <= k; };
+const VARS = ['a', 'b', 'x', 'y'];
+
+/* ---------- конструкторы ---------- */
+const base = (concept, form, type, o) => ({ concept, form, type, ...o });
+const opts = (right, ...wrong) => rnd.shuffle([{ label: right, ok: true }, ...wrong.map(w => (Array.isArray(w) ? { label: w[0], ok: false, why: w[1] } : { label: w, ok: false }))]);
+const tf = (concept, s, truth, why) => base(concept, 'tf', 'choice', { lead: s, big: true, options: [{ label: 'Правда', ok: truth, why }, { label: 'Ложь', ok: !truth, why }], explain: [why] });
+const ch = (concept, lead, options, o = {}) => base(concept, 'choice', 'choice', { lead, options, ...o });
+/* num: ответ — дробь Q; ловушки — [[Q, текст]] */
+const num = (concept, lead, answer, o = {}) => base(concept, 'num', 'num', { lead, answer: Q.of(answer), ...o,
+  traps: (o.traps || []).map(([v, msg]) => [Q.of(v), msg]).filter(([v]) => !v.eq(Q.of(answer))) });
+const expr = (concept, lead, answer, o = {}) => base(concept, 'expr', 'expr', { lead, answer, vars: answer.vars().length ? answer.vars() : ['x'], ...o });
+const finderr = (concept, lead, lines, wrong, explain, o = {}) => base(concept, 'finderr', 'finderr', { lead, lines, wrong, explain, ...o });
+
+/* ---------- куски выражений (из «Икс-квеста») ---------- */
+const T = (v, c) => ({ t: 'term', v, c: Q.of(c) });
+const B = (k, inner) => ({ t: 'br', k: Q.of(k), inner: inner.map(x => ({ v: x.v, c: Q.of(x.c) })) });
+function fmtPieces(ps) {
+  return ps.map((p, i) => {
+    const neg = (p.t === 'term' ? p.c : p.k).sign() < 0;
+    let body;
+    if (p.t === 'term') body = termAbs(p);
+    else { const ak = p.k.abs(); body = (ak.eq(1) ? '' : fmtAbs(ak)) + '(' + fmtTerms(p.inner) + ')'; }
+    if (i === 0) return (neg ? '-' : '') + body;
+    return (neg ? ' - ' : ' + ') + body;
+  }).join('');
+}
+function expandPieces(ps) {
+  const out = [];
+  for (const p of ps) {
+    if (p.t === 'term') out.push({ v: p.v, c: p.c });
+    else for (const t of p.inner) out.push({ v: t.v, c: t.c.mul(p.k) });
+  }
+  return out;
+}
+const linOf = ps => Lin.ofTerms(expandPieces(ps));
+const termPar = t => (t.c.sign() < 0 ? `(${fmtTerms([t])})` : fmtTerms([t]));
+const orderOf = terms => [...new Set(terms.map(t => t.v))];
+function likeSteps(terms, order) {
+  const lines = [];
+  for (const v of order || orderOf(terms)) {
+    const cs = terms.filter(t => t.v === v).map(t => ({ v: '', c: t.c }));
+    if (!cs.length) continue;
+    const sum = cs.reduce((s, t) => s.add(t.c), Q.of(0));
+    const head = v ? m(v) : 'числа';
+    lines.push(cs.length > 1 ? `${head}: ${m(fmtTerms(cs) + ' = ' + fmtNum(sum))}` : `${head}: ${m(fmtNum(sum))}`);
+  }
+  return lines;
+}
+function bracketSteps(p) {
+  const res = expandPieces([p]);
+  if (p.k.eq(-1)) return ['Минус перед скобкой переворачивает знак у каждого внутри:', m(`${fmtPieces([p])} = ${fmtTerms(res)}`)];
+  if (p.k.eq(1)) return ['Плюс перед скобкой ничего не меняет — просто убираем скобки:', m(`${fmtPieces([p])} = ${fmtTerms(res)}`)];
+  const lines = p.inner.map((t, i) => m(`${fmtNum(p.k)} * ${termPar(t)} = ${fmtSigned(res[i])}`));
+  lines.push('Итого: ' + m(fmtTerms(res)));
+  return lines;
+}
+
+/* ---------- числовая прямая (живой чертёж на GEO) ---------- */
+const NL = { x0: 24, x1: 296, y: 104, h: 168 };
+function numLine(start, ans, { drag = true, show = null } = {}) {
+  let lo = Math.min(start, ans, 0) - 2, hi = Math.max(start, ans, 0) + 2;
+  while (hi - lo < 8) { lo--; if (hi - lo < 8) hi++; }
+  const span = hi - lo, X = v => NL.x0 + ((v - lo) / span) * (NL.x1 - NL.x0);
+  const every = span <= 9 ? 1 : span <= 18 ? 2 : 5;
+  const points = { L: { x: NL.x0 - 14, y: NL.y }, R: { x: NL.x1 + 14, y: NL.y }, S: { x: X(start), y: NL.y }, M: { x: X(show == null ? start : show), y: NL.y } };
+  const items = [{ t: 'seg', a: 'L', b: 'R', w: 3, color: 'ink' }];
+  for (let v = lo; v <= hi; v++) {
+    const a = 'ta' + v, b = 'tb' + v, big = v % every === 0;
+    points[a] = { x: X(v), y: NL.y - (big ? 9 : 5) }; points[b] = { x: X(v), y: NL.y + (big ? 9 : 5) };
+    items.push({ t: 'seg', a, b, w: v === 0 ? 3.5 : 2, color: v === 0 ? 'gold' : 'grey' });
+    if (big) items.push({ t: 'text', x: X(v), y: NL.y + 30, s: v < 0 ? '−' + -v : String(v), cls: 'tk' + (v === 0 ? ' z' : '') });
+  }
+  items.push({ t: 'seg', a: 'S', b: 'M', w: 7, color: 'pink' });
+  items.push({ t: 'text', x: X(start), y: NL.y - 30, s: 'старт', cls: 'tk st' });
+  items.push({ t: 'pt', id: 'S', label: false, color: 'pink', r: 7 });
+  items.push({ t: 'pt', id: 'M', label: false, color: 'lime', r: drag ? 9 : 8 });
+  const scene = { points, items, h: NL.h, drag: drag ? { M: { k: 'seg', a: 'L', b: 'R' } } : null };
+  scene.value = p => Math.round(lo + ((p.M.x - NL.x0) / (NL.x1 - NL.x0)) * span);
+  scene.X = X;
+  scene.after = () => { const v = Math.max(lo, Math.min(hi, scene.value(scene.points))); scene.points.M = { x: X(v), y: NL.y }; };
+  return scene;
+}
+/* форма «отметь на прямой» */
+function lineTask(concept, lead, start, ans, traps, explain) {
+  const fig = numLine(start, ans);
+  return base(concept, 'line', 'drag', {
+    lead, fig, explain,
+    check: p => { const v = fig.value(p); if (v === ans) return { ok: true }; const t = traps.find(([w]) => w === v); return { ok: false, msg: t ? t[1] : `Ты на ${fmtNum(Q.of(v))}, а ответ — другой.` }; },
+    solve: p => ({ ...p, M: { x: fig.X(ans), y: NL.y } }),
+    readout: p => `сейчас: ${String(fig.value(p)).replace('-', '−')}`,
+  });
+}
+
+/* ================= МИССИЯ 1. МИНУС И МИНУС ================= */
+
+function genNegNeg(form) {
+  const ints = form === 'line' || form === 'predict' || rnd.p(0.7);
+  let a = ints ? rnd.int(-8, 8) : new Q(rnd.int(-60, 80), 10).num(), b = ints ? rnd.int(1, 9) : new Q(rnd.int(11, 89), 10).num();
+  if (form === 'finderr' && a <= 0) a = rnd.int(1, 8);
+  const A = Q.of(a), Bq = Q.of(b), ans = A.add(Bq);
+  const math = `${fmtNum(A)} - (-${fmtAbs(Bq)})`;
+  const explain = ['Два минуса подряд ' + m('- (-') + ' — это плюс:', m(`${math} = ${fmtNum(A)} + ${fmtAbs(Bq)} = ${fmtNum(ans)}`), 'На прямой: вычесть отрицательное — шаг вправо.'];
+  const traps = [[A.sub(Bq), `Ловушка: ${m('- (-' + fmtAbs(Bq) + ')')} превращается в ${m('+ ' + fmtAbs(Bq))}, а не в ${m('- ' + fmtAbs(Bq))}.`],
+    [A.abs().add(Bq).neg(), 'Ловушка контрольной: два минуса подряд не делают «минус всё». ' + m('- (-') + ' — это плюс.']];
+  if (form === 'num') return num('negneg', 'Посчитай:', ans, { math, traps, explain });
+  if (form === 'line') return lineTask('negneg', `Отметь на прямой ${m(math)}. Начни со старта и тяни зелёную точку.`, a, a + b, traps.map(([v, s]) => [v.num(), s]), explain);
+  if (form === 'predict') {
+    const reveal = numLine(a, a + b, { drag: false, show: a + b });
+    return base('negneg', 'predict', 'predict', { lead: `${m(math)}: от ${m(fmtNum(A))} пойдём вправо или влево?`,
+      options: opts('Вправо — станет больше', ['Влево — станет меньше', 'Вычесть отрицательное — это прибавить. Значит, вправо.'], ['Останемся на месте', 'Число изменится: прибавляем ' + b + '.']),
+      reveal: { lead: `Вычесть ${m('(-' + b + ')')} — то же, что прибавить ${b}: шаг вправо.`, fig: reveal, readout: () => `${math.replace(/-/g, '−')} = ${String(a + b).replace('-', '−')}`, done: `${math.replace(/-/g, '−')} = ${String(a + b).replace('-', '−')}. Минус минуса — плюс.` },
+      explain: ['Вычесть отрицательное число — то же, что прибавить положительное.'] });
+  }
+  if (form === 'finderr') return finderr('negneg', 'Так решали на контрольной. Найди строчку, где появилась ошибка:',
+    [math, `= -(${fmtNum(A)} + ${fmtAbs(Bq)})`, `= ${fmtNum(A.add(Bq).neg())}`], 1, explain);
+  return rnd.pick([
+    () => tf('negneg', `${m(`${fmtNum(A)} - (-${fmtAbs(Bq)})`)} — это то же, что ${m(`${fmtNum(A)} + ${fmtAbs(Bq)}`)}.`, true, 'Да: два минуса подряд дают плюс.'),
+    () => tf('negneg', `${m(`${fmtNum(A)} - (-${fmtAbs(Bq)})`)} — это то же, что ${m(`${fmtNum(A)} - ${fmtAbs(Bq)}`)}.`, false, `Нет: ${m('- (-')} — это плюс.`),
+    () => tf('negneg', 'Вычесть отрицательное число — то же, что прибавить положительное.', true, 'Это и есть правило «минус минуса».'),
+    () => { const k = rnd.int(2, 9); return tf('negneg', `${m(`-${k} - (-${k})`)} = ${m('-' + 2 * k)}.`, false, `${m(`-${k} - (-${k}) = -${k} + ${k} = 0`)}.`); },
+  ])();
+}
+
+function genDown(form) {
+  const kind = rnd.pick(['nn', 'nn', 'small']);
+  let a, b, math, ans, explain, traps;
+  if (kind === 'nn') {
+    a = rnd.int(1, 9); b = rnd.int(1, 9); ans = -(a + b); math = `-${a} - ${b}`;
+    explain = [`Тут не «минус на минус», а два шага вниз. Было ${m('-' + a)}°, похолодало ещё на ${b}°:`, m(`-${a} - ${b} = -(${a} + ${b}) = ${ans}`)];
+    traps = [[a + b, 'Оба числа тянут вниз — ответ с минусом.'], [b - a, 'Оба шага вниз: модули складываем, а не вычитаем.'], [a - b, 'Оба шага вниз: модули складываем, а не вычитаем.']];
+  } else {
+    a = rnd.int(1, 9); b = a + rnd.int(1, 9); ans = a - b; math = `${a} - ${b}`;
+    explain = ['Вычитаем больше, чем есть, — уходим ниже нуля:', m(`${a} - ${b} = -(${b} - ${a}) = ${ans}`)];
+    traps = [[b - a, `Число верное, а знак — нет: из ${a} вычли ${b}, ушли ниже нуля.`]];
+  }
+  const start = kind === 'nn' ? -a : a;
+  if (form === 'num') return num('down', 'Посчитай:', ans, { math, traps, explain });
+  if (form === 'line') return lineTask('down', `Отметь на прямой ${m(math)}.`, start, ans, traps, explain);
+  if (form === 'choice') {
+    const wrong = [...new Set(traps.map(t => t[0]).filter(v => v !== ans))].slice(0, 2);
+    while (wrong.length < 2) wrong.push(ans - 2 * wrong.length - 1);
+    const lead = kind === 'nn' && rnd.p(0.5) ? `Было ${m('-' + a)}°, похолодало ещё на ${b}°. Сколько стало?` : `${m(math)} = ?`;
+    return ch('down', lead, opts(m(String(ans)), ...wrong.map(w => [m(String(w)), (traps.find(t => t[0] === w) || [0, 'Не сходится.'])[1]])), { explain });
+  }
+  return rnd.pick([
+    () => tf('down', `${m(math)} = ${m(String(ans))}.`, true, explain[1].replace(/`/g, '`')),
+    () => tf('down', `${m(math)} = ${m(String(-ans))}.`, false, 'Знак не тот: ' + explain[1]),
+    () => tf('down', 'Если из меньшего числа вычесть большее, получится отрицательное.', true, 'Да: уходим ниже нуля.'),
+  ])();
+}
+
+function genUp(form) {
+  const kind = rnd.pick(['np', 'pn']);
+  let a = rnd.int(1, 9), b = rnd.int(1, 9);
+  if (a === b) b = a + 1;
+  let math, ans, start, explain, traps;
+  if (kind === 'np') {
+    math = `-${a} + ${b}`; ans = b - a; start = -a;
+    explain = [`Было ${m('-' + a)}°, потеплело на ${b}°:`, m(ans >= 0 ? `-${a} + ${b} = ${b} - ${a} = ${ans}` : `-${a} + ${b} = -(${a} - ${b}) = ${ans}`)];
+    traps = [[-(a + b), `Плюс — это шаг вверх, а не вниз: ${m(math)} = ${ans}.`], [a + b, `${m('-' + a)} — это ниже нуля. Шагаем вверх на ${b}: получится ${ans}.`], [-ans, 'Число верное, а знак — нет. Смотри, перешли ли мы через ноль.']];
+  } else {
+    math = `${a} + (-${b})`; ans = a - b; start = a;
+    explain = ['Плюс и минус рядом ' + m('+ (-') + ' — это просто минус:', m(`${a} + (-${b}) = ${a} - ${b} = ${ans}`)];
+    traps = [[a + b, `${m('+ (-' + b + ')')} — это вычесть ${b}, а не прибавить.`], [-ans, 'Число верное, а знак — нет.']];
+  }
+  if (form === 'num') return num('up', 'Посчитай:', ans, { math, traps, explain });
+  if (form === 'line') return lineTask('up', `Отметь на прямой ${m(math)}.`, start, ans, traps, explain);
+  if (form === 'choice') {
+    const wrong = [...new Set(traps.map(t => t[0]).filter(v => v !== ans))].slice(0, 2);
+    return ch('up', `${m(math)} = ?`, opts(m(String(ans)), ...wrong.map(w => [m(String(w)), traps.find(t => t[0] === w)[1]])), { explain });
+  }
+  const wrongLine = kind === 'np' ? [`= -(${a} + ${b})`, `= ${-(a + b)}`] : [`= ${a} + ${b}`, `= ${a + b}`];
+  return finderr('up', 'Где появилась ошибка?', [math, ...wrongLine], 1, explain);
+}
+
+/* ================= МИССИЯ 2. СКОБКИ ================= */
+
+function genMulSign(form) {
+  const kind = rnd.pick(['ii', 'di', 'div']);
+  let a, b, ans, op;
+  if (kind === 'div') {
+    ans = Q.of(rnd.nz(-12, 12)); b = Q.of(rnd.int(2, 9) * rnd.sgn()); if (ans.sign() > 0 && b.sign() > 0) b = b.neg();
+    a = ans.mul(b); op = ':';
+  } else {
+    a = kind === 'ii' ? Q.of(rnd.int(2, 12) * rnd.sgn()) : Q.of(rnd.pick([0.2, 0.3, 0.5, 1.5, 2.5]) * rnd.sgn());
+    b = Q.of(rnd.int(2, 12) * rnd.sgn());
+    if (a.sign() > 0 && b.sign() > 0) { if (rnd.p(0.5)) a = a.neg(); else b = b.neg(); }
+    ans = a.mul(b); op = '*';
+  }
+  const negs = (a.sign() < 0) + (b.sign() < 0), math = `${fmtNum(a)} ${op} ${fmtPar(b)}`;
+  const explain = [negs === 2 ? 'Минусов два — чётно → ответ с плюсом.' : 'Минус один → ответ с минусом.', m(`${fmtAbs(a.abs())} ${op} ${fmtAbs(b.abs())} = ${fmtAbs(ans.abs())}`), 'Ответ: ' + m(fmtNum(ans))];
+  if (form === 'num') return num('mulsign', op === '*' ? 'Умножь:' : 'Раздели:', ans, { math, explain, signMsg: 'Число верное, а знак — нет. Посчитай минусы: два — плюс, один — минус.' });
+  if (form === 'choice') return ch('mulsign', `Какой знак будет у ответа ${m(math)}?`, opts(negs === 2 ? 'Плюс' : 'Минус', [negs === 2 ? 'Минус' : 'Плюс', negs === 2 ? 'Минусов два — это плюс.' : 'Минус один — ответ с минусом.'], ['Зависит от того, какие числа', 'Знак зависит только от количества минусов.']), { explain });
+  return rnd.pick([
+    () => tf('mulsign', 'Минус умножить на минус — получится плюс.', true, 'Два минуса — чётно — плюс.'),
+    () => { const x = rnd.int(2, 9), y = rnd.int(2, 9); return tf('mulsign', `${m(`-${x} * ${y}`)} = ${m(String(x * y))}.`, false, `Минус один — ответ с минусом: ${m(`-${x * y}`)}.`); },
+    () => { const x = rnd.int(2, 9), y = rnd.int(2, 9); return tf('mulsign', `${m(`-${x * y} : (-${y})`)} = ${m(String(x))}.`, true, 'Минус на минус при делении тоже даёт плюс.'); },
+    () => tf('mulsign', 'При делении знаки работают так же, как при умножении.', true, 'Да: два минуса — плюс, один — минус.'),
+  ])();
+}
+
+/* «расставь знаки»: prefix ± (inner) */
+function signsTask(concept, sign) {
+  const v = rnd.pick(VARS), w = rnd.pick(VARS.filter(x => x !== v));
+  const pre = rnd.int(2, 20);
+  let inner = [T(v, rnd.p(0.4) ? 1 : rnd.int(2, 9)), T('', rnd.nz(-12, 12))];
+  if (rnd.p(0.45)) inner.push(T(w, rnd.nz(-8, 8)));
+  inner = rnd.p(0.3) ? [inner[1].c.sign() < 0 ? T('', inner[1].c.neg()) : inner[1], ...inner.filter((_, i) => i !== 1)] : inner;
+  const p = B(sign, inner), res = expandPieces([p]);
+  const math = `${pre} ${sign < 0 ? '-' : '+'} (${fmtTerms(inner)})`;
+  const want = res.map(t => t.c.sign() < 0);
+  const start = inner.map(t => t.c.sign() < 0);
+  return base(concept, 'signs', 'signs', {
+    lead: 'Раскрой скобку — поставь знаки (нажимай на знак, чтобы поменять):', math, pre: String(pre),
+    terms: inner.map(t => ({ v: t.v, c: t.c.abs() })), start, answer: want,
+    trap: got => {
+      if (sign < 0 && got.every((g, i) => g === start[i])) return 'Минус перед скобкой переворачивает ВСЕ знаки внутри — а ты оставила как было.';
+      if (sign < 0 && got[0] === want[0] && got.slice(1).some((g, i) => g === start[i + 1])) return 'Первый знак поменяла, а остальные — нет. Минус перед скобкой меняет знак у КАЖДОГО слагаемого.';
+      if (sign > 0) return 'Плюс перед скобкой ничего не меняет: знаки остаются как были.';
+      return null;
+    },
+    explain: [...bracketSteps(p), 'Ответ: ' + m(`${pre} ${fmtTerms(res).startsWith('-') ? '- ' + fmtTerms(res).slice(1) : '+ ' + fmtTerms(res)}`)],
+  });
+}
+function genBrMinus(form) {
+  if (form === 'signs') return signsTask('brminus', -1);
+  const v = rnd.pick(VARS), inner = [T(v, rnd.p(0.4) ? 1 : rnd.int(2, 9)), T('', rnd.nz(-12, 12))];
+  const p = B(-1, inner), res = expandPieces([p]), ans = Lin.ofTerms(res);
+  const onlyFirst = Lin.ofTerms([res[0], inner[1]]), noFlip = Lin.ofTerms(inner);
+  const explain = bracketSteps(p);
+  if (form === 'expr') return expr('brminus', 'Раскрой скобки:', ans, { math: fmtPieces([p]), order: orderOf(res), alts: [{ lin: onlyFirst, msg: 'Минус перед скобкой переворачивает знак у ВСЕХ внутри — и у второго тоже.' }, { lin: noFlip, msg: 'Знаки остались как в скобке. А минус перед скобкой их переворачивает.' }], explain });
+  if (form === 'choice') return ch('brminus', `${m(fmtPieces([p]))} = ?`, opts(m(fmtTerms(res)), [m(onlyFirst.fmt(orderOf(res))), 'Перевернула только первый знак. Минус меняет все.'], [m(noFlip.fmt(orderOf(res))), 'Знаки не поменялись — а минус перед скобкой их переворачивает.']), { explain });
+  const A = rnd.int(5, 20);
+  const wrongRes = Lin.ofTerms([res[0], inner[1]]);
+  return finderr('brminus', 'Где появилась ошибка?', [`${A} - (${fmtTerms(inner)})`, `= ${A} ${fmtTerms(wrongRes.terms(orderOf(res))).startsWith('-') ? '- ' + fmtTerms(wrongRes.terms(orderOf(res))).slice(1) : '+ ' + fmtTerms(wrongRes.terms(orderOf(res)))}`, `= ${Lin.ofTerms([T('', A)]).add(wrongRes).fmt([v, ''])}`], 1,
+    ['Минус перед скобкой меняет знак у каждого слагаемого:', m(`${A} - (${fmtTerms(inner)}) = ${A} ${fmtTerms(res).startsWith('-') ? '- ' + fmtTerms(res).slice(1) : '+ ' + fmtTerms(res)}`)]);
+}
+function genBrPlus(form) {
+  if (form === 'signs') return signsTask('brplus', 1);
+  const v = rnd.pick(VARS), pre = rnd.int(2, 15), inner = [T(v, rnd.int(1, 9)), T('', -rnd.int(1, 12))];
+  const p = B(1, inner), res = expandPieces([p]);
+  const flipped = Lin.ofTerms(inner).scale(-1);
+  if (form === 'choice') return ch('brplus', `${m(`${pre} + (${fmtTerms(inner)})`)} = ?`,
+    opts(m(`${pre} + ${fmtTerms(res)}`), [m(`${pre} ${flipped.fmt([v, '']).startsWith('-') ? '- ' + flipped.fmt([v, '']).slice(1) : '+ ' + flipped.fmt([v, ''])}`), 'Перед скобкой плюс — знаки не меняются.']),
+    { explain: bracketSteps(p) });
+  return rnd.pick([
+    () => tf('brplus', 'Если перед скобкой плюс, знаки внутри не меняются.', true, 'Да: плюс перед скобкой просто убираем.'),
+    () => tf('brplus', `${m(`${pre} + (${fmtTerms(inner)})`)} = ${m(`${pre} + ${fmtTerms(res)}`)}.`, true, 'Перед скобкой плюс — знаки остаются.'),
+    () => tf('brplus', `${m(`${pre} + (${fmtTerms(inner)})`)} = ${m(`${pre} - ${termAbs(inner[0])} + ${fmtAbs(inner[1].c.abs())}`)}.`, false, 'Плюс перед скобкой ничего не переворачивает.'),
+    () => tf('brplus', 'Если перед скобкой минус, знаки внутри меняются на противоположные.', true, 'Да — это главное правило скобок.'),
+  ])();
+}
+function genBrK(form) {
+  const v = rnd.pick(VARS);
+  const k = rnd.p(0.3) ? rnd.pick([-6, -4, -2, 2, 4]) : rnd.int(2, 6) * rnd.sgn();
+  const dec = rnd.p(0.25) && Math.abs(k) % 2 === 0;
+  const inner = dec ? [T(v, rnd.pick([0.5, 1.5])), T('', rnd.pick([0.5, 1.5, 2.5]) * rnd.sgn())] : [T(v, rnd.int(1, 6)), T('', rnd.nz(-9, 9))];
+  const p = B(k, inner), res = expandPieces([p]), ans = Lin.ofTerms(res);
+  const onlyFirst = Lin.ofTerms([res[0], inner[1]]), signErr = Lin.ofTerms([res[0], { v: '', c: res[1].c.neg() }]);
+  const explain = bracketSteps(p);
+  if (form === 'expr') return expr('brk', 'Раскрой скобки:', ans, { math: fmtPieces([p]), order: orderOf(res), alts: [{ lin: onlyFirst, msg: 'Умножать нужно КАЖДОЕ слагаемое в скобке — и число тоже.' }], explain });
+  if (form === 'choice') return ch('brk', `${m(fmtPieces([p]))} = ?`, opts(m(fmtTerms(res)), [m(onlyFirst.fmt(orderOf(res))), 'Второе слагаемое тоже надо умножить.'], [m(signErr.fmt(orderOf(res))), `Знак у числа: ${m(`${fmtNum(p.k)} * ${termPar(inner[1])} = ${fmtSigned(res[1])}`)}.`]), { explain });
+  if (form === 'finderr') return finderr('brk', 'Где появилась ошибка?', [fmtPieces([p]), `= ${signErr.fmt(orderOf(res))}`], 1, explain);
+  return rnd.pick([
+    () => tf('brk', `${m(fmtPieces([p]))} = ${m(fmtTerms(res))}.`, true, 'Да — умножили на каждое слагаемое со знаком.'),
+    () => tf('brk', `${m(fmtPieces([p]))} = ${m(signErr.fmt(orderOf(res)))}.`, false, `Знак у числа не тот: ${m(`${fmtNum(p.k)} * ${termPar(inner[1])} = ${fmtSigned(res[1])}`)}.`),
+    () => tf('brk', 'Число перед скобкой умножают только на первое слагаемое.', false, 'Нет — на КАЖДОЕ слагаемое в скобке.'),
+  ])();
+}
+
+/* ================= МИССИЯ 3. ПОДОБНЫЕ ================= */
+
+function genLikeFind(form) {
+  const [v, w] = rnd.shuffle(VARS).slice(0, 2);
+  if (form === 'pick') {
+    const target = T(v, rnd.int(2, 9));
+    let mine, others;
+    do {
+      mine = [T(v, rnd.pick([1, -1])), T(v, rnd.nz(-9, 9)), T(v, rnd.nz(-9, 9))];
+      others = [T(w, rnd.nz(-9, 9)), T('', rnd.nz(-12, 12)), T(w, rnd.pick([1, -1]))];
+    } while (new Set([...mine, ...others].map(fmtSigned)).size < 6 || mine.some(t => t.c.eq(target.c)));
+    const chips = rnd.shuffle([...mine, ...others].map((t, i) => ({ id: 'c' + i, t }))).map((c, i) => ({ ...c, label: fmtSigned(c.t) }));
+    const answer = chips.filter(c => c.t.v === v).map(c => c.id);
+    const traps = {}; chips.forEach(c => { if (c.t.v !== v) traps[c.id] = c.t.v ? `${m(fmtSigned(c.t))} — с буквой ${m(c.t.v)}, а ${m(fmtSigned(target))} — с буквой ${m(v)}. Разные буквы не подобны.` : `${m(fmtSigned(c.t))} — просто число, без буквы. Числа подобны только числам.`; });
+    return base('likefind', 'pick', 'pick', { lead: `Отметь все слагаемые, подобные ${m(fmtTerms([target]))}.`, chips: chips.map(c => ({ id: c.id, label: c.label })), answer, traps, explain: [`Подобные — с одной и той же буквой. Коэффициент и знак могут быть любыми: ${m(v)}, ${m('-' + v)}, ${m('7' + v)} — все подобны.`] });
+  }
+  if (form === 'choice') return ch('likefind', 'Какие слагаемые подобные?', opts(m(`${rnd.int(2, 9)}${v}`) + ' и ' + m(`-${v}`), [m(`3${v}`) + ' и ' + m(`3${w}`), 'Буквы разные — не подобны, хоть числа и одинаковые.'], [m(`5${v}`) + ' и ' + m('5'), 'Число без буквы не подобно слагаемому с буквой.']), { explain: ['Подобные слагаемые — с одинаковой буквенной частью.'] });
+  return rnd.pick([
+    () => tf('likefind', `${m(`5${v}`)} и ${m(`-${v}`)} — подобные слагаемые.`, true, 'Буква одна — значит подобные.'),
+    () => tf('likefind', `${m(`2${v}`)} и ${m(`2${w}`)} — подобные слагаемые.`, false, 'Буквы разные — не подобные.'),
+    () => tf('likefind', `${m('7')} и ${m('-3')} — подобные слагаемые.`, true, 'Числа подобны друг другу — их тоже складывают.'),
+    () => tf('likefind', `${m(`4${v}`)} и ${m('4')} — подобные слагаемые.`, false, 'Одно с буквой, другое без — не подобные.'),
+  ])();
+}
+function genLikeOne(form) {
+  const v = rnd.pick(VARS);
+  if (form === 'num') return rnd.pick([
+    () => num('likeone', `Какой коэффициент у слагаемого ${m('-' + v)}?`, -1, { traps: [[1, 'Знак — часть коэффициента: у ' + m('-' + v) + ' коэффициент −1.'], [0, m(v) + ' — это ' + m('1' + v) + ', а не ' + m('0' + v) + '.']], explain: [`${m('-' + v)} — это ${m('-1' + v)}: коэффициент ${m('-1')}.`] }),
+    () => num('likeone', `Какой коэффициент у слагаемого ${m(v)}?`, 1, { traps: [[0, 'Когда число не написано, коэффициент — 1, а не 0.']], explain: [`${m(v)} — это ${m('1' + v)}.`] }),
+    () => { const A = rnd.int(5, 20), d = rnd.int(2, 6); return num('likeone', `Упрости и назови коэффициент: ${m(`${A}${v} - ${v} + ${d}${v}`)}`, A - 1 + d, { traps: [[A + 1 + d, `${m('-' + v)} — это минус один ${m(v)}: ${m(`${A} - 1 + ${d}`)}.`], [A + d, `${m('-' + v)} тоже считается — это ${m('-1' + v)}.`]], explain: [`${m(`${A} - 1 + ${d} = ${A - 1 + d}`)} → ${m(`${A - 1 + d}${v}`)}`] }); },
+  ])();
+  if (form === 'choice') { const A = rnd.int(5, 20), d = rnd.int(2, 6); return ch('likeone', `${m(`${A}${v} - ${v} + ${d}${v}`)} = ?`, opts(m(`${A - 1 + d}${v}`), [m(`${A + 1 + d}${v}`), `${m('-' + v)} — это минус один, а не плюс.`], [m(`${A + d}${v}`), `${m('-' + v)} тоже считается — это ${m('-1' + v)}.`]), { explain: [`${m(v)}: ${m(`${A} - 1 + ${d} = ${A - 1 + d}`)}`] }); }
+  return rnd.pick([
+    () => tf('likeone', `${m('-' + v)} — это ${m('-1' + v)}.`, true, 'Да: коэффициент −1.'),
+    () => tf('likeone', `${m(v)} — это ${m('0' + v)}.`, false, `Нет: ${m(v)} — это ${m('1' + v)}.`),
+    () => tf('likeone', `${m(`${v} + ${v}`)} = ${m('2' + v)}.`, true, '1 + 1 = 2.'),
+    () => tf('likeone', `${m(`${v} - ${v}`)} = ${m(v)}.`, false, `1 − 1 = 0, значит ${m(`${v} - ${v} = 0`)}.`),
+  ])();
+}
+function genLikeSum(form) {
+  for (;;) {
+    const two = rnd.p(0.55);
+    let terms, order;
+    if (two) {
+      const [u, w] = rnd.pick([['a', 'b'], ['x', 'y'], ['m', 'n']]);
+      terms = [T(u, rnd.int(1, 9)), T(w, rnd.int(1, 9) * rnd.sgn()), T(u, rnd.int(1, 9) * rnd.sgn()), T(w, rnd.int(1, 9) * rnd.sgn())];
+    } else {
+      const v = rnd.pick(VARS);
+      terms = [T(v, rnd.int(2, 9)), T('', rnd.nz(-12, 12)), T(v, rnd.nz(-9, 9)), T('', rnd.nz(-12, 12))];
+    }
+    const ans = Lin.ofTerms(terms);
+    if (ans.isConst() || ans.vars().length < (two ? 2 : 1) || (!two && ans.c.isZero())) continue;
+    order = orderOf(terms);
+    const explain = ['Собираем подобные — вместе со знаком слева:', ...likeSteps(terms, order), 'Ответ: ' + m(ans.fmt(order))];
+    const flipKey = order.find(k => k && terms.filter(t => t.v === k).some(t => t.c.sign() < 0));
+    const flipLin = flipKey ? Lin.ofTerms(terms.map(t => (t.v === flipKey ? { v: t.v, c: t.c.abs() } : t))) : null;
+    if (form === 'expr') return expr('likesum', 'Упрости:', ans, { math: fmtTerms(terms), order, explain, alts: flipLin && !flipLin.eq(ans) ? [{ lin: flipLin, msg: `Знак — часть слагаемого: минусы у ${m(flipKey)} потерялись.` }] : [] });
+    if (form === 'num') {
+      const k = order.find(x => x); const c = ans.coef(k);
+      const tr = flipLin && flipKey === k && !flipLin.coef(k).eq(c) ? [[flipLin.coef(k), 'Знак — часть слагаемого: бери его вместе с числом.']] : [];
+      return num('likesum', `Упрости ${m(fmtTerms(terms))}. Сколько получится ${m(k)}? (впиши число перед ${m(k)})`, c, { traps: tr, explain });
+    }
+    if (form === 'choice') {
+      const w1 = flipLin && !flipLin.eq(ans) ? flipLin : ans.add(Lin.term(order[0], 2));
+      const w2 = ans.scale(-1);
+      if (w1.eq(w2) || w2.eq(ans)) continue;
+      return ch('likesum', `${m(fmtTerms(terms))} = ?`, opts(m(ans.fmt(order)), [m(w1.fmt(order)), 'Где-то потерялся минус: знак берём вместе с числом.'], [m(w2.fmt(order)), 'Все знаки перевернулись — так быть не должно.']), { explain });
+    }
+    // её ошибка из контрольной: 20b − b + 3b → (20 + 1 + 3)b
+    const A = rnd.int(8, 20), d = rnd.int(2, 6), c = rnd.int(1, 9), e = rnd.int(c + 1, 14), v = rnd.pick(['b', 'x', 'a']);
+    return finderr('likesum', 'Решение с контрольной. Где первая ошибка?', [`${A}${v} - ${v} + ${c} + ${d}${v} - ${e}`, `= (${A} + 1 + ${d})${v} + ${c} - ${e}`, `= ${A + 1 + d}${v} - ${e - c}`], 1,
+      [`${m('-' + v)} — это минус один ${m(v)}: ${m(`${A} - 1 + ${d} = ${A - 1 + d}`)}.`, 'Ответ: ' + m(`${A - 1 + d}${v} - ${e - c}`)]);
+  }
+}
+function genFinish(form) {
+  for (;;) {
+    const v = rnd.pick(VARS), kind = rnd.pick(['kr', 'mbr', 'two']);
+    let ps;
+    if (kind === 'kr') ps = [B(rnd.int(2, 5) * rnd.sgn(), [T(v, rnd.int(1, 5)), T('', rnd.nz(-9, 9))]), T('', rnd.nz(-12, 12))];
+    else if (kind === 'mbr') ps = [T(v, rnd.int(5, 20)), B(-1, [T(v, rnd.pick([1, 1, 2])), T('', rnd.nz(-9, 9))]), B(1, [T(v, rnd.int(1, 6)), T('', rnd.nz(-12, 12))])];
+    else ps = [B(rnd.int(2, 5), [T(v, 1), T('', rnd.nz(-6, 6))]), B(-rnd.int(2, 5), [T(v, 1), T('', rnd.nz(-6, 6))])];
+    const ex = expandPieces(ps), ans = Lin.ofTerms(ex), order = [v, ''];
+    if (ans.isConst() || ans.c.isZero()) continue;
+    const explain = ['Раскрываем скобки:', m('= ' + fmtTerms(ex)), 'Собираем подобные:', ...likeSteps(ex, order), 'Ответ: ' + m(ans.fmt(order))];
+    if (form === 'expr') return expr('finish', 'Упрости до конца:', ans, { math: fmtPieces(ps), order, explain });
+    // одна потерянная смена знака: последнее слагаемое со своим знаком наоборот
+    const lost = Lin.ofTerms(ex.map((t, i) => (i === ex.length - 1 ? { v: t.v, c: t.c.neg() } : t)));
+    if (form === 'choice') {
+      const w2 = lost.eq(ans.scale(-1)) ? ans.add(Lin.term('', 1)) : ans.scale(-1);
+      return ch('finish', `Какой ответ доведён до конца для ${m(fmtPieces(ps))}?`, opts(m(ans.fmt(order)),
+        [m(fmtTerms(ex)), 'Это ещё не конец — подобные не сложены.'], [m(lost.fmt(order)), 'Где-то потерялся знак: проверь последнее слагаемое.']), { explain, alsoWrong: m(w2.fmt(order)) });
+    }
+    return finderr('finish', 'Где появилась ошибка?', [fmtPieces(ps), `= ${fmtTerms(ex)}`, `= ${lost.fmt(order)}`], 2,
+      ['Собираем подобные — вместе со знаком:', ...likeSteps(ex, order), 'Ответ: ' + m(ans.fmt(order))]);
+  }
+}
+
+/* ================= МИССИЯ 4. ПЕРЕНОС ================= */
+
+const mkEq = (v, L, R) => ({ v, L, R });
+const fmtEq = eq => fmtPieces(eq.L) + ' = ' + fmtPieces(eq.R);
+function solveEq(eq) {
+  const l = linOf(eq.L), r = linOf(eq.R);
+  const A = l.coef(eq.v).sub(r.coef(eq.v)), Bc = r.c.sub(l.c);
+  return { A, B: Bc, sol: A.isZero() ? null : Bc.div(A) };
+}
+function moved(eq) {
+  const Lt = expandPieces(eq.L), Rt = expandPieces(eq.R), neg = t => ({ v: t.v, c: t.c.neg() });
+  return { Lt, Rt, left: Lt.filter(t => t.v).concat(Rt.filter(t => t.v).map(neg)), right: Rt.filter(t => !t.v).concat(Lt.filter(t => !t.v).map(neg)) };
+}
+const axbStr = (v, A, Bc) => `${fmtTerms([{ v, c: A }])} = ${fmtNum(Bc)}`;
+function eqLines(eq) {
+  const { A, B: Bc, sol } = solveEq(eq), mv = moved(eq);
+  const out = [fmtEq(eq)];
+  if ([...eq.L, ...eq.R].some(p => p.t === 'br')) out.push(`${fmtTerms(mv.Lt)} = ${fmtTerms(mv.Rt)}`);
+  const ml = `${fmtTerms(mv.left)} = ${fmtTerms(mv.right)}`; if (ml !== out[out.length - 1]) out.push(ml);
+  const ab = axbStr(eq.v, A, Bc); if (ab !== out[out.length - 1]) out.push(ab);
+  if (!A.eq(1)) out.push(`${eq.v} = ${fmtNum(sol)}`);
+  return out;
+}
+function eqMove() {
+  for (;;) {
+    const v = rnd.p(0.8) ? 'x' : rnd.pick(['y', 'a']);
+    const x0 = rnd.nz(-9, 9), a = rnd.int(2, 9), c = rnd.p(0.25) ? 0 : rnd.nz(-9, 9);
+    if (a === c) continue;
+    const b = rnd.nz(-20, 20), d = (a - c) * x0 + b;
+    if (!d || Math.abs(d) > 60) continue;
+    const L = rnd.p(0.3) ? [T('', b), T(v, a)] : [T(v, a), T('', b)];
+    const R = c ? (rnd.p(0.5) ? [T(v, c), T('', d)] : [T('', d), T(v, c)]) : [T('', d)];
+    return mkEq(v, L, R);
+  }
+}
+function eqBracket() {
+  for (;;) {
+    const v = 'x', x0 = rnd.nz(-6, 6);
+    if (rnd.p(0.5)) {
+      const k = rnd.int(2, 5) * rnd.sgn(), a = rnd.int(1, 3), b = rnd.nz(-7, 7), c = rnd.nz(-6, 6);
+      if (k * a === c) continue;
+      const d = (k * a - c) * x0 + k * b;
+      if (!d || Math.abs(d) > 60) continue;
+      return mkEq(v, [B(k, [T(v, a), T('', b)])], [T(v, c), T('', d)]);
+    }
+    const mm = rnd.int(1, 20), a = rnd.int(1, 4), b = rnd.nz(-9, 9), c = rnd.nz(-6, 6);
+    if (-a === c) continue;
+    const d = (-a - c) * x0 + mm - b;
+    if (!d || Math.abs(d) > 60) continue;
+    return mkEq(v, [T('', mm), B(-1, [T(v, a), T('', b)])], [T(v, c), T('', d)]);
+  }
+}
+
+function genMoveSign(form) {
+  const eq = eqMove(), mv = moved(eq);
+  if (form === 'tiles') {
+    return base('movesign', 'tiles', 'tiles', { lead: `Перенеси: ${m(eq.v)} — налево, числа — направо. Нажимай на плитку не на своей стороне.`, math: fmtEq(eq), left: mv.Lt, right: mv.Rt, v: eq.v,
+      explain: ['Переходишь через «=» — знак меняется: был +, стал −; был −, стал +.', 'Кто остаётся на своей стороне — знак не меняет.', 'Получится: ' + m(`${fmtTerms(mv.left)} = ${fmtTerms(mv.right)}`)] });
+  }
+  const t = rnd.pick(mv.Lt.filter(x => !x.v).concat(mv.Rt.filter(x => x.v)));
+  if (form === 'choice') {
+    const dirw = t.v ? 'налево' : 'направо';
+    return ch('movesign', `В уравнении ${m(fmtEq(eq))} переносим ${m(fmtSigned(t))} ${dirw}. Каким он станет?`, opts(m(fmtSigned({ v: t.v, c: t.c.neg() })), [m(fmtSigned(t)), 'Через «=» без смены знака нельзя.']), { explain: ['При переносе через «=» знак меняется на противоположный.'] });
+  }
+  if (form === 'finderr') {
+    const wrongRight = mv.right.map((x, i) => (i >= mv.Rt.filter(y => !y.v).length ? { v: x.v, c: x.c.neg() } : x));
+    if (wrongRight.every((x, i) => x.c.eq(mv.right[i].c))) return genMoveSign('choice');
+    return finderr('movesign', 'Где потерялся знак?', [fmtEq(eq), `${fmtTerms(mv.left)} = ${fmtTerms(wrongRight)}`], 1,
+      ['Число перешло через «=» — его знак должен поменяться:', m(`${fmtTerms(mv.left)} = ${fmtTerms(mv.right)}`)], { eqLines: true });
+  }
+  return rnd.pick([
+    () => tf('movesign', 'При переносе через «=» слагаемое меняет знак.', true, 'Да: был +, стал −; был −, стал +.'),
+    () => { const k = rnd.int(2, 9), r = rnd.int(10, 30); return tf('movesign', `${m(`3x - ${k} = ${r}`)} → ${m(`3x = ${r} - ${k}`)}.`, false, `${m('-' + k)} перешло направо и стало ${m('+' + k)}: ${m(`3x = ${r} + ${k}`)}.`); },
+    () => { const k = rnd.int(2, 9), r = rnd.int(10, 30); return tf('movesign', `${m(`x + ${k} = ${r}`)} → ${m(`x = ${r} - ${k}`)}.`, true, `${m('+' + k)} перешло направо и стало ${m('-' + k)}.`); },
+  ])();
+}
+function genMoveWho(form) {
+  const eq = eqMove(), mv = moved(eq);
+  const all = [...mv.Lt.map((t, i) => ({ id: 'L' + i, t, side: 'L' })), ...mv.Rt.map((t, i) => ({ id: 'R' + i, t, side: 'R' }))];
+  const movers = all.filter(x => (x.side === 'L' ? !x.t.v : !!x.t.v));
+  if (form === 'pick') {
+    const traps = {}; all.forEach(x => { if (!movers.includes(x)) traps[x.id] = x.t.v ? `${m(fmtSigned(x.t))} — икс, он уже слева. Его не трогаем.` : `${m(fmtSigned(x.t))} — число, оно уже справа. Его не трогаем.`; });
+    return base('movewho', 'pick', 'pick', { lead: `${m(fmtEq(eq))}. Иксы — налево, числа — направо. Отметь, кого надо перенести.`, chips: all.map(x => ({ id: x.id, label: fmtSigned(x.t), side: x.side })), answer: movers.map(x => x.id), traps,
+      explain: [`Переносим тех, кто не на своей стороне: ${movers.map(x => m(fmtSigned(x.t))).join(' и ')}.`] });
+  }
+  if (form === 'choice') {
+    const right = movers.map(x => m(fmtSigned(x.t))).join(' и ');
+    const stayers = all.filter(x => !movers.includes(x)).map(x => m(fmtSigned(x.t))).join(' и ');
+    if (!stayers || right === stayers) return genMoveWho('tf');
+    return ch('movewho', `${m(fmtEq(eq))}. Кого переносим через «=»?`, opts(right, [stayers, 'Наоборот: эти уже на своей стороне. Иксы — слева, числа — справа.'], ['Всех', 'Тех, кто уже на своей стороне, не трогаем.']), { explain: ['Иксы собираем слева, числа — справа. Переносим только тех, кто не на своём месте.'] });
+  }
+  return rnd.pick([
+    () => tf('movewho', 'Слагаемое, которое остаётся на своей стороне, знак не меняет.', true, 'Знак меняется только при переходе через «=».'),
+    () => { const k = rnd.int(2, 9); return tf('movewho', `В уравнении ${m(`x + ${k} = 10`)} надо перенести ${m('x')}.`, false, `${m('x')} уже слева. Переносим число ${m('+' + k)} направо.`); },
+    () => tf('movewho', 'Иксы собирают в одной части уравнения, числа — в другой.', true, 'Да, обычно иксы слева, числа справа.'),
+  ])();
+}
+function genAxb(form) {
+  const v = rnd.pick(['x', 'x', 'y', 'a']);
+  let a, b;
+  if (rnd.p(0.75)) { a = Q.of(rnd.int(2, 12) * rnd.sgn()); b = a.mul(rnd.nz(-15, 15)); } else { a = Q.of(-1); b = Q.of(rnd.nz(-20, 20)); }
+  const x = b.div(a), math = `${fmtTerms([{ v, c: a }])} = ${fmtNum(b)}`;
+  const explain = [`Делим правую часть на число перед ${m(v)}:`, m(`${v} = ${fmtNum(b)} : ${fmtPar(a)} = ${fmtNum(x)}`)];
+  const inv = a.div(b);
+  if (form === 'num') return num('axb', 'Реши уравнение:', x, { math, prefix: v + ' =', explain, traps: [[inv, `Делить надо наоборот: ${m(fmtNum(b) + ' : ' + fmtPar(a))}.`]], signMsg: 'Число верное, а знак — нет. При делении знаки — как при умножении.' });
+  if (form === 'choice') {
+    const w = [[m(`${v} = ${fmtNum(x.neg())}`), 'Знак потерялся: при делении знаки — как при умножении.']];
+    if (!inv.eq(x) && !inv.eq(x.neg()) && nice(inv, 3)) w.push([m(`${v} = ${fmtNum(inv)}`), 'Делить надо правую часть на число перед иксом, а не наоборот.']);
+    else w.push([m(`${v} = ${fmtNum(b.sub(a))}`), 'Это вычитание. А ' + m(fmtTerms([{ v, c: a }])) + ' значит умножение — обратное действие деление.']);
+    return ch('axb', `${m(math)}. Чему равен ${m(v)}?`, opts(m(`${v} = ${fmtNum(x)}`), ...w), { explain });
+  }
+  return finderr('axb', 'Где ошибка?', [math, `${v} = ${fmtNum(b)} : ${fmtPar(a)}`, `${v} = ${fmtNum(x.neg())}`], 2, explain, { eqLines: true });
+}
+function genSolve(form) {
+  const eq = rnd.p(0.55) ? eqMove() : eqBracket(), { sol } = solveEq(eq), lines = eqLines(eq);
+  if (!sol || !sol.isInt()) return genSolve(form);
+  if (form === 'num') return num('solve', 'Реши уравнение:', sol, { math: fmtEq(eq), prefix: eq.v + ' =', explain: lines.map(m), signMsg: 'Число верное, а знак потерялся — при переносе или при делении.' });
+  // ошибка в строке переноса: одно перенесённое число без смены знака
+  const mv = moved(eq), nR = mv.Rt.filter(t => !t.v).length;
+  const wrongRight = mv.right.map((t, i) => (i === nR ? { v: t.v, c: t.c.neg() } : t));
+  const A = Lin.ofTerms(mv.left).coef(eq.v), Bw = Lin.ofTerms(wrongRight).c;
+  const wsol = A.isZero() ? null : Bw.div(A);
+  if (form === 'choice') {
+    const w = [[m(`${eq.v} = ${fmtNum(sol.neg())}`), 'Знак потерялся. Проверь перенос и деление.']];
+    if (wsol && !wsol.eq(sol) && !wsol.eq(sol.neg()) && nice(wsol, 3)) w.push([m(`${eq.v} = ${fmtNum(wsol)}`), 'Так выходит, если перенести число без смены знака.']);
+    else w.push([m(`${eq.v} = ${fmtNum(sol.add(1))}`), 'Подставь — не сходится.']);
+    return ch('solve', `${m(fmtEq(eq))}. Чему равен ${m(eq.v)}?`, opts(m(`${eq.v} = ${fmtNum(sol)}`), ...w), { explain: lines.map(m) });
+  }
+  if (nR >= mv.right.length || !wsol) return genSolve('num');
+  const head = lines.slice(0, lines.length - (lines.length > 3 ? 3 : 2));
+  const bad = [...head, `${fmtTerms(mv.left)} = ${fmtTerms(wrongRight)}`, `${eq.v} = ${fmtNum(wsol)}`];
+  return finderr('solve', 'Где потерялся знак?', bad, head.length, lines.map(m), { eqLines: true });
+}
+
+/* ================= РЕЕСТР ================= */
+const C = (id, title, forms, gen, trapTitle, tag) => ({ id, title, forms, gen, trapTitle, tag });
+const CONCEPTS = {
+  negneg: C('negneg', 'Вычесть отрицательное', ['num', 'line', 'predict', 'finderr', 'tf'], genNegNeg, '− (− … ) — это плюс', 'sub'),
+  down: C('down', 'Ниже нуля: −5 − 3, 3 − 10', ['num', 'line', 'choice', 'tf'], genDown, 'Оба шага вниз', 'sub'),
+  up: C('up', 'Плюс и минус рядом', ['num', 'line', 'choice', 'finderr'], genUp, 'Знак после перехода через ноль', 'sub'),
+  mulsign: C('mulsign', 'Знак при умножении', ['num', 'choice', 'tf'], genMulSign, 'Минус на минус', 'br'),
+  brminus: C('brminus', 'Минус перед скобкой', ['signs', 'expr', 'choice', 'finderr'], genBrMinus, 'Меняются ВСЕ знаки', 'br'),
+  brplus: C('brplus', 'Плюс перед скобкой', ['signs', 'choice', 'tf'], genBrPlus, 'Ничего не меняется', 'br'),
+  brk: C('brk', 'Число перед скобкой', ['expr', 'choice', 'finderr', 'tf'], genBrK, 'Умножить каждое', 'br'),
+  likefind: C('likefind', 'Какие слагаемые подобные', ['pick', 'choice', 'tf'], genLikeFind, 'Одна буква', 'like'),
+  likeone: C('likeone', 'b — это 1b, −b — это −1b', ['num', 'choice', 'tf'], genLikeOne, '−b считается как −1', 'like'),
+  likesum: C('likesum', 'Складываем со знаком', ['expr', 'num', 'finderr', 'choice'], genLikeSum, 'Знак — часть слагаемого', 'like'),
+  finish: C('finish', 'Доведи до конца', ['expr', 'choice', 'finderr'], genFinish, 'Не бросать на полпути', 'like'),
+  movesign: C('movesign', 'Знак при переносе', ['tiles', 'choice', 'tf', 'finderr'], genMoveSign, 'Через «=» — со сменой знака', 'move'),
+  movewho: C('movewho', 'Кого переносим', ['pick', 'choice', 'tf'], genMoveWho, 'Иксы налево, числа направо', 'move'),
+  axb: C('axb', 'x = b : a', ['num', 'choice', 'finderr'], genAxb, 'Делить правую на число перед x', 'move'),
+  solve: C('solve', 'Уравнение целиком', ['num', 'choice', 'finderr'], genSolve, 'Знак при переносе', 'move'),
+};
+function gen(conceptId, form) {
+  const c = CONCEPTS[conceptId];
+  const f = form && c.forms.includes(form) ? form : rnd.pick(c.forms);
+  const t = c.gen(f);
+  t.form = f; t.concept = conceptId;
+  return t;
+}
+
+/* ---------- миссии и уровни ---------- */
+const DAYS = [
+  { n: 1, title: 'Минус и минус', sub: 'Сложение и вычитание с минусом — на числовой прямой.', color: 'pink' },
+  { n: 2, title: 'Скобки', sub: 'Минус перед скобкой переворачивает всё. Число перед скобкой — на каждого.', color: 'blue' },
+  { n: 3, title: 'Подобные', sub: 'Собираем похожих — вместе со знаком. И до конца.', color: 'lime' },
+  { n: 4, title: 'Перенос через «=»', sub: 'Через «=» — со сменой знака. В конце — контрольная и приз.', color: 'gold' },
+];
+const L = (id, day, title, concepts, o = {}) => ({ id, day, title, concepts, ...o });
+const LEVELS = [
+  L('d1l1', 1, 'Минус минуса', ['negneg'], { rules: [`Два минуса подряд ${m('- (-')} — это плюс: ${m('2 - (-3) = 2 + 3 = 5')}.`, 'На прямой: вычесть отрицательное — шаг ВПРАВО.'], example: [m('2 - (-2,7)'), m('= 2 + 2,7'), m('= 4,7')] }),
+  L('d1l2', 1, 'Ниже нуля', ['down'], { rules: [`${m('-5 - 3')} — не «два минуса подряд», а два шага вниз: ${m('-8')}.`, `${m('3 - 10')}: вычитаем больше, чем есть, — уходим ниже нуля: ${m('-7')}.`], example: ['было −5°, похолодало на 3° → −8°'] }),
+  L('d1l3', 1, 'Плюс и минус рядом', ['up'], { rules: [`${m('-7 + 3')}: было −7°, потеплело на 3° → ${m('-4')}.`, `${m('5 + (-8)')} — это ${m('5 - 8 = -3')}.`], example: [m('-7 + 3 = -(7 - 3) = -4')] }),
+  L('d1b', 1, 'Босс: минус и минус', ['negneg', 'down', 'up'], { boss: true, short: 'Босс 1', hearts: 3, count: 8, rules: ['8 примеров на сложение и вычитание с минусом.', '3 сердечка: можно ошибиться дважды.'] }),
+
+  L('d2l1', 2, 'Минус на минус', ['mulsign'], { rules: [`Умножаешь или делишь — сначала знак: ${m('- * - = +')}, ${m('- * + = -')}.`, 'Посчитай минусы: два — плюс, один — минус.'], example: [m('-6 * (-1,5) = 9')] }),
+  L('d2l2', 2, 'Плюс и минус перед скобкой', ['brminus', 'brplus'], { rules: [`Минус перед скобкой переворачивает ВСЕ знаки: ${m('-(b - 3) = -b + 3')}.`, `Плюс перед скобкой ничего не меняет: ${m('5 + (x - 7) = 5 + x - 7')}.`], example: [m('20 - (b - 3)'), m('= 20 - b + 3')] }),
+  L('d2l3', 2, 'Число перед скобкой', ['brk'], { rules: ['Число перед скобкой умножаешь на КАЖДОЕ слагаемое внутри — со знаком.'], example: [m('-6(0,5x - 1,5)'), m('-6 * 0,5x = -3x'), m('-6 * (-1,5) = +9'), m('= -3x + 9')] }),
+  L('d2b', 2, 'Босс: скобки', ['mulsign', 'brminus', 'brplus', 'brk'], { boss: true, short: 'Босс 2', hearts: 3, count: 8, rules: ['8 заданий на скобки.', '3 сердечка.'] }),
+
+  L('d3l1', 3, 'Кто кому подобен', ['likefind', 'likeone'], { rules: ['Подобные — с одной и той же буквой: 5a, −a, 7a. Числа подобны числам.', `${m('b')} — это ${m('1b')}, ${m('-b')} — это ${m('-1b')}.`], example: [m('5a') + ' и ' + m('-a') + ' — подобные', m('3a') + ' и ' + m('3b') + ' — нет'] }),
+  L('d3l2', 3, 'Складываем со знаком', ['likesum'], { rules: [`Знак — часть слагаемого. Это не ${m('8b')}, а ${m('-8b')}.`, 'Подчёркивай подобные вместе со знаком слева.'], example: [m('5a + 7b - 2a - 8b'), `${m('a')}: ${m('5 - 2 = 3')}`, `${m('b')}: ${m('7 - 8 = -1')}`, m('= 3a - b')] }),
+  L('d3l3', 3, 'Доведи до конца', ['finish'], { rules: ['Ответ готов, когда осталось одно слагаемое с буквой и одно число.', `${m('12x + 6 - 5')} — ещё не ответ. ${m('12x + 1')} — ответ.`], example: [m('20b - (b - 3) + (3b - 10)'), m('= 20b - b + 3 + 3b - 10'), m('= 22b - 7')] }),
+  L('d3b', 3, 'Босс: подобные', ['likefind', 'likeone', 'likesum', 'finish'], { boss: true, short: 'Босс 3', hearts: 3, count: 8, rules: ['8 заданий на подобные слагаемые.', '3 сердечка.'] }),
+
+  L('d4l1', 4, 'Через «=»', ['movesign', 'movewho'], { rules: ['Иксы — налево, числа — направо.', 'Переходишь через «=» — знак меняется. Кто остался на месте — знак не меняет.'], example: [m('3x - 8 = x + 6'), m('3x - x = 6 + 8')] }),
+  L('d4l2', 4, 'Найди x', ['axb'], { rules: [`${m('ax = b')} → ${m('x = b : a')}. Делим правую часть на число перед ${m('x')}.`, 'Знак — по правилу «минус на минус».'], example: [m('-6x = 24'), m('x = 24 : (-6) = -4')] }),
+  L('d4l3', 4, 'Уравнение целиком', ['solve'], { rules: ['Скобки → перенос со сменой знака → подобные → делим.'], example: [m('4(x + 7) = 3 - x'), m('4x + 28 = 3 - x'), m('4x + x = 3 - 28'), m('5x = -25'), m('x = -5')] }),
+  L('d4b', 4, 'Итоговая контрольная', Object.keys(CONCEPTS), { boss: true, short: 'Контрольная', final: true, hearts: 3, count: 10, rules: ['10 заданий по всем четырём темам.', '3 сердечка. Пройдёшь — приз твой.'] }),
+];
+
+/* ---------- проверка ответа ---------- */
+function check(task, input) {
+  switch (task.type) {
+    case 'choice': case 'predict': {
+      const o = task.options[input.choice];
+      return o.ok ? { ok: true } : { bad: true, msg: o.why || task.explain[0] };
+    }
+    case 'finderr':
+      if (input.line === task.wrong) return { ok: true };
+      return { bad: true, msg: input.line < task.wrong ? 'Эта строчка верная. Ошибка появилась ниже.' : 'Ошибка появилась раньше — проверь строчки выше.' };
+    case 'drag': {
+      const r = task.check(input.points);
+      return r.ok ? { ok: true } : { bad: true, trap: true, msg: r.msg };
+    }
+    case 'signs': {
+      const got = input.neg || [];
+      if (got.length === task.answer.length && got.every((g, i) => g === task.answer[i])) return { ok: true };
+      const t = task.trap(got);
+      return { bad: true, trap: !!t, msg: t || 'Не все знаки верные. Смотри, как надо:' };
+    }
+    case 'pick': {
+      const sel = (input.sel || []).slice().sort(), ans = task.answer.slice().sort();
+      if (!sel.length) return { retry: true, msg: 'Отметь нужные плитки' };
+      if (sel.length === ans.length && sel.every((x, i) => x === ans[i])) return { ok: true };
+      const wrong = sel.find(x => !ans.includes(x));
+      if (wrong && task.traps[wrong]) return { bad: true, trap: true, msg: task.traps[wrong] };
+      return { bad: true, msg: 'Не всё отмечено — нужных больше.' };
+    }
+    case 'tiles':
+      return input.ok ? { ok: true } : { bad: true, trap: true, msg: input.msg };
+    case 'num': return checkNum(task, input.str);
+    case 'expr': return checkExpr(task, input.str);
+  }
+  return { bad: true, msg: '?' };
+}
+function checkNum(task, str) {
+  const p = XM.parseInput(str || '');
+  if (!p.ok) return { retry: true, msg: p.err };
+  if (!p.lin.isConst()) return { retry: true, msg: 'Тут нужен ответ числом — без букв' };
+  if (!p.reduced) return { retry: true, msg: 'Досчитай до одного числа' };
+  const v = p.lin.c, ans = task.answer;
+  if (v.eq(ans)) return { ok: true };
+  const tr = (task.traps || []).find(([w]) => w.eq(v));
+  if (tr) return { bad: true, trap: true, msg: tr[1] };
+  if (!ans.isZero() && v.eq(ans.neg())) return { bad: true, trap: true, msg: task.signMsg || 'Число верное, а знак — нет.' };
+  return { bad: true, msg: 'Не сходится. Смотри, как надо:' };
+}
+function checkExpr(task, str) {
+  const p = XM.parseInput(str || '');
+  if (!p.ok) return { retry: true, msg: p.err };
+  const ans = task.answer, her = p.lin;
+  const extra = her.vars().filter(v => !task.vars.includes(v));
+  if (extra.length) return { retry: true, msg: `Откуда тут ${m(extra[0])}? В задании другая буква.` };
+  if (her.eq(ans)) return p.reduced ? { ok: true } : { retry: true, unfin: true, msg: 'Почти! Это ещё не до конца — сложи подобные.' };
+  for (const a of task.alts || []) if (her.eq(a.lin)) return { bad: true, trap: true, msg: a.msg };
+  const keys = [...new Set([...ans.vars(), ...her.vars(), ''])];
+  const flipped = []; let other = false;
+  for (const v of keys) { const c1 = ans.coef(v), c2 = her.coef(v); if (c1.eq(c2)) continue; if (!c1.isZero() && c2.eq(c1.neg())) flipped.push({ v, c: c1 }); else other = true; }
+  if (flipped.length && !other) return { bad: true, trap: true, msg: `Всё верно, кроме знака: должно быть ${flipped.map(f => m(fmtSigned(f))).join(' и ')}.` };
+  return { bad: true, msg: 'Не сходится. Смотри, как надо:' };
+}
+
+const FORMS_RU = { num: 'посчитай', expr: 'запиши ответ', line: 'числовая прямая', predict: 'предскажи и проверь', choice: 'выбери', tf: 'правда или ложь', finderr: 'найди ошибку', signs: 'расставь знаки', pick: 'отметь на экране', tiles: 'перенеси плитки' };
+const GC = { rnd, CONCEPTS, LEVELS, DAYS, gen, check, FORMS_RU, numLine, solveEq, eqLines, fmtEq, expandPieces };
+if (typeof module !== 'undefined' && module.exports) module.exports = GC; else root.GC = GC;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>
+/* Гео-квест — движок усвоения.
+   Учёт идёт по понятиям, а не по уровням. Понятие усвоено после NEED верных подряд,
+   среди которых минимум два разных вида задания. Ошибка обнуляет серию, и следующее задание
+   по этому понятию приходит в другой форме (не той, на которой ошиблась).
+   Повторялка: каждое REVIEW_EVERY-е задание уровня — по понятию из прошлых уровней; провал снимает
+   «усвоено», и такое «потерянное» понятие повторялка спрашивает в первую очередь, пока не вернёт. */
+(function (root) {
+'use strict';
+const NEED = 3, MIN_FORMS = 2, REVIEW_EVERY = 5;
+
+const fresh = () => ({ streak: 0, recent: [], mastered: false, avoid: null, ok: 0, bad: 0, last: null, lastAt: 0, traps: 0 });
+const get = (M, id) => (M[id] = M[id] || fresh());
+const isMastered = (M, id) => !!(M[id] && M[id].mastered);
+function formsOK(recent) { return recent.length >= NEED && new Set(recent.slice(-NEED)).size >= MIN_FORMS; }
+
+/* record(M, conceptId, form, ok) → {mastered:bool, justMastered:bool, lost:bool} */
+function record(M, id, form, ok) {
+  const m = get(M, id), was = m.mastered;
+  m.last = form; m.lastAt = Date.now();
+  if (ok) {
+    m.ok++; m.streak++; m.recent.push(form); if (m.recent.length > 6) m.recent.shift();
+    m.avoid = null;
+    if (m.streak >= NEED && formsOK(m.recent)) m.mastered = true;
+  } else {
+    m.bad++; m.streak = 0; m.recent = []; m.avoid = form; m.mastered = false;
+  }
+  return { mastered: m.mastered, justMastered: !was && m.mastered, lost: was && !m.mastered };
+}
+
+/* Выбор следующего задания уровня.
+   concepts — понятия уровня; allForms — {id: [формы]}; reviewPool — усвоенные понятия прошлых миссий;
+   n — номер задания в уровне (с 0); lastId — предыдущее понятие (чтобы чередовать). */
+function pickNext(M, concepts, allForms, reviewPool, n, lastId, rnd = Math.random) {
+  const open = concepts.filter(c => !isMastered(M, c));
+  if (!open.length) return null;
+  let id;
+  // повторялка: сначала «потерянные» темы (были усвоены, но провалены на повторе), потом усвоенные
+  const review = reviewPool.filter(c => !concepts.includes(c) && M[c] && (M[c].ok + M[c].bad) > 0);
+  const lost = review.filter(c => !M[c].mastered);
+  if (review.length && n > 0 && (n + 1) % REVIEW_EVERY === 0) {
+    const src = lost.length ? lost : review;
+    id = src[Math.floor(rnd() * src.length)];
+    return { id, form: pickForm(M, id, allForms[id], rnd), review: true, lost: !M[id].mastered };
+  }
+  // чередуем: берём не то, что было только что (если есть выбор), с наименьшей серией
+  let cand = open.length > 1 ? open.filter(c => c !== lastId) : open;
+  const minStreak = Math.min(...cand.map(c => get(M, c).streak));
+  cand = cand.filter(c => get(M, c).streak === minStreak);
+  id = cand[Math.floor(rnd() * cand.length)];
+  return { id, form: pickForm(M, id, allForms[id], rnd), review: false };
+}
+/* Форма: не та, на которой ошиблась; предпочитаем ещё не встречавшуюся в текущей серии,
+   чтобы к третьему верному ответу было минимум две разных. */
+function pickForm(M, id, forms, rnd = Math.random) {
+  const m = get(M, id);
+  let cand = forms.filter(f => f !== m.avoid);
+  if (!cand.length) cand = forms.slice();
+  const unseen = cand.filter(f => !m.recent.includes(f));
+  const pool = (m.streak >= 1 && unseen.length) ? unseen : (unseen.length && rnd() < 0.7 ? unseen : cand);
+  return pool[Math.floor(rnd() * pool.length)];
+}
+/* прогресс уровня 0…1 */
+function progress(M, concepts) {
+  const s = concepts.reduce((a, c) => a + (isMastered(M, c) ? NEED : Math.min(NEED, get(M, c).streak)), 0);
+  return s / (NEED * concepts.length);
+}
+const levelDone = (M, concepts) => concepts.every(c => isMastered(M, c));
+
+const GM = { NEED, MIN_FORMS, REVIEW_EVERY, fresh, get, isMastered, record, pickNext, pickForm, progress, levelDone };
+if (typeof module !== 'undefined' && module.exports) module.exports = GM; else root.GM = GM;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>
+/* Икс-квест 2 — кот Икс, злодей Минус (вернулся), 16 котиков и шутки.
+   Котики рисуются кодом (SVG): игра работает без интернета. */
+(function (root) {
+'use strict';
+
+const EAR_IN = '#ff9fbd';
+function catSVG(c, { locked = false, size = 120 } = {}) {
+  const fur = locked ? '#2c2342' : c.fur, fur2 = locked ? '#2c2342' : c.fur2;
+  const ink = c.dark ? '#f3ecff' : '#2a1d2e';
+  const wh = c.dark ? 'rgba(255,255,255,.55)' : 'rgba(40,25,45,.35)';
+  const g = [];
+  g.push(`<path d="M20 54 L28 10 L54 34 Z" fill="${fur}"/><path d="M100 54 L92 10 L66 34 Z" fill="${fur}"/>`);
+  if (!locked) g.push(`<path d="M28 44 L31 22 L45 35 Z" fill="${EAR_IN}"/><path d="M92 44 L89 22 L75 35 Z" fill="${EAR_IN}"/>`);
+  g.push(`<ellipse cx="60" cy="68" rx="44" ry="37" fill="${fur}"/>`);
+  if (locked) {
+    g.push(`<text x="60" y="80" text-anchor="middle" font-size="34" font-weight="800" fill="#4a3d66" font-family="ui-rounded,system-ui">?</text>`);
+    return wrap(g, size);
+  }
+  const p = c.pattern;
+  if (p === 'tabby') g.push(`<path d="M60 33 l-3.5 13 h7 z M48 36 l-1 11 h5 z M72 36 l1 11 h-5 z" fill="${fur2}"/><path d="M17 66 h12 M16 73 h11 M103 66 h-12 M104 73 h-11" stroke="${fur2}" stroke-width="3.5" stroke-linecap="round"/>`);
+  if (p === 'patch') g.push(`<path d="M24 52 Q34 38 54 48 Q58 66 48 78 Q30 82 22 70 Z" fill="${fur2}"/>`);
+  if (p === 'calico') g.push(`<path d="M24 52 Q34 38 54 48 Q56 60 46 66 Q30 66 22 62 Z" fill="${fur2}"/><path d="M70 36 Q88 34 98 50 Q92 58 80 54 Q72 46 70 36 Z" fill="#3a2a2a"/>`);
+  if (p === 'tux') g.push(`<path d="M60 52 Q74 70 84 86 Q72 104 60 104 Q48 104 36 86 Q46 70 60 52 Z" fill="${fur2}"/>`);
+  if (p === 'spots') g.push(`<circle cx="40" cy="46" r="6" fill="${fur2}"/><circle cx="82" cy="50" r="5" fill="${fur2}"/><circle cx="88" cy="80" r="4" fill="${fur2}"/>`);
+  if (p === 'x') g.push(`<path d="M53 38 l14 14 M67 38 l-14 14" stroke="${fur2}" stroke-width="5" stroke-linecap="round"/>`);
+  if (p === 'angle') g.push(`<path d="M50 50 L62 36 L74 50" stroke="${fur2}" stroke-width="4.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`);
+  if (p === 'tri') g.push(`<path d="M52 50 L62 34 L72 50 Z" fill="${fur2}"/>`);
+  g.push(`<ellipse cx="36" cy="83" rx="7" ry="4" fill="#ff7aa8" opacity=".35"/><ellipse cx="84" cy="83" rx="7" ry="4" fill="#ff7aa8" opacity=".35"/>`);
+  const eye = (x, kind) => {
+    if (kind === 'happy') return `<path d="M${x - 8} 68 q8 -10 16 0" stroke="${ink}" stroke-width="3.6" fill="none" stroke-linecap="round"/>`;
+    if (kind === 'sleepy') return `<path d="M${x - 8} 66 q8 6 16 0" stroke="${ink}" stroke-width="3.6" fill="none" stroke-linecap="round"/>`;
+    return `<ellipse cx="${x}" cy="66" rx="8.5" ry="10" fill="${c.eye || '#9be37a'}"/><ellipse cx="${x}" cy="66" rx="3" ry="8" fill="#140c18"/><circle cx="${x + 3}" cy="62" r="2.4" fill="#fff"/>`;
+  };
+  const [eL, eR] = c.eyes === 'wink' ? ['round', 'happy'] : [c.eyes, c.eyes];
+  g.push(eye(44, eL), eye(76, eR));
+  g.push(`<path d="M56 78 h8 l-4 5 z" fill="#ff6f9c"/><path d="M60 83 q-4 6 -9 2 M60 83 q4 6 9 2" stroke="${ink}" stroke-width="2.4" fill="none" stroke-linecap="round"/>`);
+  g.push(`<path d="M30 80 L8 75 M30 85 L8 88 M90 80 L112 75 M90 85 L112 88" stroke="${wh}" stroke-width="1.8" stroke-linecap="round"/>`);
+  const a = c.acc;
+  if (a === 'bow') g.push(`<path d="M82 22 l-12 -8 v16 z M82 22 l12 -8 v16 z" fill="#ff4f8b"/><circle cx="82" cy="22" r="4" fill="#ff86b0"/>`);
+  if (a === 'glasses') g.push(`<g stroke="${ink}" stroke-width="2.6" fill="rgba(255,255,255,.12)"><circle cx="44" cy="66" r="13"/><circle cx="76" cy="66" r="13"/></g><path d="M57 64 q3 -3 6 0" stroke="${ink}" stroke-width="2.6" fill="none"/>`);
+  if (a === 'shades') g.push(`<rect x="29" y="57" width="28" height="17" rx="7" fill="#120c18"/><rect x="63" y="57" width="28" height="17" rx="7" fill="#120c18"/><path d="M57 63 h6" stroke="#120c18" stroke-width="3"/><path d="M34 61 l7 0" stroke="rgba(255,255,255,.5)" stroke-width="2" stroke-linecap="round"/>`);
+  if (a === 'crown') g.push(`<path d="M40 30 L44 12 L52 24 L60 8 L68 24 L76 12 L80 30 Z" fill="#ffcf4a" stroke="#e0a91e" stroke-width="2"/><circle cx="60" cy="22" r="3" fill="#ff4f8b"/>`);
+  if (a === 'phones') g.push(`<path d="M18 62 Q18 14 60 14 Q102 14 102 62" stroke="#47a6ff" stroke-width="6" fill="none"/><rect x="10" y="56" width="14" height="24" rx="6" fill="#47a6ff"/><rect x="96" y="56" width="14" height="24" rx="6" fill="#47a6ff"/>`);
+  if (a === 'hat') g.push(`<path d="M30 34 L44 2 L60 30 Z" fill="#b8f04a"/><path d="M36 22 l14 4 M40 12 l10 3" stroke="#ff4f8b" stroke-width="3"/><circle cx="44" cy="3" r="5" fill="#ff4f8b"/>`);
+  if (a === 'scarf') g.push(`<path d="M24 96 Q60 112 96 96 L98 106 Q60 122 22 106 Z" fill="#ff4f8b"/><path d="M78 104 l6 16 l9 -3 l-5 -15 z" fill="#ff4f8b"/>`);
+  if (a === 'star') g.push(`<path d="M90 92 l2.6 5.4 5.9 .8 -4.3 4.1 1 5.9 -5.2 -2.8 -5.2 2.8 1 -5.9 -4.3 -4.1 5.9 -.8 z" fill="#ffcf4a"/>`);
+  if (a === 'cap') g.push(`<path d="M24 40 Q28 14 60 14 Q92 14 96 40 Z" fill="#47a6ff"/><path d="M60 40 L114 40 Q112 48 96 48 L60 46 Z" fill="#2f86e0"/>`);
+  if (a === 'protr') g.push(`<path d="M14 100 A46 46 0 0 1 106 100 Z" fill="rgba(255,255,255,.14)" stroke="rgba(255,255,255,.7)" stroke-width="2"/><path d="M30 92 l4 -3 M46 78 l3 4 M60 72 v5 M74 78 l-3 4 M90 92 l-4 -3" stroke="rgba(255,255,255,.75)" stroke-width="2"/>`);
+  if (a === 'pencil') g.push(`<path d="M92 92 l16 -34 l8 4 l-16 34 z" fill="#ffcf4a" stroke="#c99a1a" stroke-width="1.5"/><path d="M108 58 l8 4 l2 -6 l-4 -2 z" fill="#f4d2b5"/><path d="M92 92 l8 4 l-10 6 z" fill="#2a1d2e"/>`);
+  if (a === 'ruler') g.push(`<rect x="6" y="94" width="108" height="14" rx="3" fill="#ffcf4a" stroke="#c99a1a" stroke-width="1.5"/><path d="M18 94 v5 M30 94 v8 M42 94 v5 M54 94 v8 M66 94 v5 M78 94 v8 M90 94 v5 M102 94 v8" stroke="#8a6a1a" stroke-width="1.5"/>`);
+  if (a === 'compass') g.push(`<path d="M96 58 l10 44 M96 58 l-10 44" stroke="#9aa3c2" stroke-width="4" stroke-linecap="round"/><circle cx="96" cy="56" r="5" fill="#ff4f8b"/>`);
+  if (a === 'halo') g.push(`<ellipse cx="60" cy="14" rx="26" ry="7" fill="none" stroke="#ffcf4a" stroke-width="4"/>`);
+  return wrap(g, size);
+}
+function wrap(g, size) {
+  return `<svg class="cat" viewBox="0 0 120 120" width="${size}" height="${size}" aria-hidden="true">${g.join('')}</svg>`;
+}
+
+/* Злодей Минус: розовая черта со злыми бровями */
+function minusSVG(size = 64) {
+  return `<svg class="villain" viewBox="0 0 100 60" width="${size}" height="${size * 0.6}" aria-hidden="true">
+    <rect x="6" y="18" width="88" height="26" rx="13" fill="#ff4f8b"/>
+    <path d="M30 22 l14 6 M70 22 l-14 6" stroke="#2a0d1c" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="38" cy="33" r="4" fill="#2a0d1c"/><circle cx="62" cy="33" r="4" fill="#2a0d1c"/>
+    <path d="M44 40 q6 -4 12 0" stroke="#2a0d1c" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`;
+}
+
+/* ---------- кот Икс — ведущий ---------- */
+const GUIDE = { name: 'Икс', fur: '#2b2533', fur2: '#ff4f8b', pattern: 'x', eyes: 'round', eye: '#ffd34a', acc: 'none', dark: true };
+
+/* ---------- 16 котиков: по одному за уровень ---------- */
+const CATS = {
+  d1l1: { name: 'Плюсомёт', fur: '#ff9b45', fur2: '#d96d22', pattern: 'tabby', eyes: 'happy', acc: 'star', power: 'Видит «− (−» и стреляет плюсом. Без промаха.' },
+  d1l2: { name: 'Сосулька', fur: '#c9d6ec', fur2: '#8fa6cc', pattern: 'spots', eyes: 'sleepy', acc: 'scarf', power: '−5 и ещё −3 — это −8 и плед. Ниже нуля — как дома.' },
+  d1l3: { name: 'Качели', fur: '#f4efe8', fur2: '#ff9b45', pattern: 'calico', eyes: 'wink', acc: 'bow', power: '−7 + 3: вверх на три, но всё ещё ниже нуля. Качается.' },
+  d1b: { name: 'Термометр', fur: '#1f1a26', fur2: '#ff4f8b', pattern: 'tux', eyes: 'round', eye: '#b8f04a', acc: 'shades', dark: true, power: 'Босс температур ниже нуля. Холоден, но справедлив.' },
+  d2l1: { name: 'Знакарь', fur: '#9aa3c2', fur2: '#6e7697', pattern: 'tabby', eyes: 'round', eye: '#ffd34a', acc: 'glasses', power: 'Считает минусы: два — плюс, один — минус. Ни разу не ошибся.' },
+  d2l2: { name: 'Переворот', fur: '#d9c2a3', fur2: '#8a6a4a', pattern: 'patch', eyes: 'happy', acc: 'cap', power: 'Минус перед скобкой — и всё внутри переворачивается. Миска тоже.' },
+  d2l3: { name: 'Множитель', fur: '#7c8db5', fur2: '#56658c', pattern: 'none', eyes: 'round', eye: '#7ad08b', acc: 'phones', power: 'Умножает на каждого в скобке. Никого не забывает.' },
+  d2b: { name: 'Распаковщица', fur: '#ffb36b', fur2: '#f4efe8', pattern: 'tux', eyes: 'round', eye: '#5fc4ff', acc: 'crown', power: 'Все скобки открыты. Все знаки на месте. Слэй.' },
+  d3l1: { name: 'Похожий', fur: '#f3d9b1', fur2: '#d9a86a', pattern: 'tabby', eyes: 'round', eye: '#7ad08b', acc: 'none', power: 'Ищет своих: иксы к иксам, числа к числам.' },
+  d3l2: { name: 'Знак-с-собой', fur: '#2b2533', fur2: '#f4efe8', pattern: 'spots', eyes: 'round', eye: '#ffd34a', acc: 'hat', dark: true, power: 'Берёт слагаемое только вместе со знаком. Как кот — только с коробкой.' },
+  d3l3: { name: 'Досчитай', fur: '#c9c4d6', fur2: '#9d97b0', pattern: 'patch', eyes: 'wink', acc: 'ruler', power: '12x + 6 − 5 не оставит. Досчитает до 12x + 1 и только потом спит.' },
+  d3b: { name: 'Собиратель', fur: '#6b4a3a', fur2: '#e08a4a', pattern: 'patch', eyes: 'round', eye: '#ffd34a', acc: 'crown', dark: true, power: 'Собрал всех подобных. Со знаками. До конца.' },
+  d4l1: { name: 'Пограничник', fur: '#9aa3c2', fur2: '#f4efe8', pattern: 'tux', eyes: 'round', eye: '#5fc4ff', acc: 'cap', power: 'Через «=» без смены знака не пропускает. Даже по блату.' },
+  d4l2: { name: 'Делитель-2', fur: '#f4efe8', fur2: '#3a2a2a', pattern: 'patch', eyes: 'happy', acc: 'star', power: 'x = b : a. И знак при делении не теряет.' },
+  d4l3: { name: 'Решала', fur: '#d97a3a', fur2: '#a8521f', pattern: 'tabby', eyes: 'round', eye: '#ffd34a', acc: 'pencil', power: 'Решает уравнение целиком: скобки, перенос, ответ. Без паники.' },
+  d4b: { name: 'Легенда-3', fur: '#f4efe8', fur2: '#ffcf4a', pattern: 'none', eyes: 'round', eye: '#ff6fa8', acc: 'halo', power: 'Минус побеждён окончательно. Уровень ауры: плюс бесконечность.' },
+};
+
+/* ---------- что говорит кот Икс перед уровнем ---------- */
+const SAYS = {
+  d1l1: 'Минус вернулся. Начнём с его любимого трюка: «минус минуса».',
+  d1l2: 'Два шага вниз — это не два минуса подряд. Не дай ему себя запутать.',
+  d1l3: 'Плюс и минус рядом. Смотри, перешла ли ты через ноль — от этого знак ответа.',
+  d1b: 'Босс. Минус прячется в каждом примере. Покажи, что ты его видишь.',
+  d2l1: 'Минус на минус — плюс. Это как «не, ну не» — получается «да».',
+  d2l2: 'Минус перед скобкой — токсик: переворачивает всех внутри. Плюс — норм, никого не трогает.',
+  d2l3: 'Число перед скобкой здоровается с КАЖДЫМ внутри. Со знаком.',
+  d2b: 'Босс скобок. Раскрывай аккуратно — Минус любит прятаться у второго слагаемого.',
+  d3l1: 'Подобные — с одной буквой. Как котики одной породы.',
+  d3l2: 'Знак — часть слагаемого. Это не 8b, а −8b. База.',
+  d3l3: '12x + 6 − 5 — это как недосмотренный сериал. Досмотри.',
+  d3b: 'Босс подобных. Собери всех — и со знаками.',
+  d4l1: 'Переходишь через «=» — переодеваешься: был плюс, стал минус.',
+  d4l2: 'x = b : a. Правило короче, чем этот текст. Но знак — не забудь.',
+  d4l3: 'Теперь целиком. Ты уже умеешь всё по отдельности.',
+  d4b: 'Финал. Минус дрожит. Я в тебя верю — я видел.',
+};
+
+/* ---------- фразы ---------- */
+const PRAISE = ['База.', 'Имба!', 'Чётко 😼', 'Слэй 💅', 'Изи.', 'Кот одобряет', '+100 ауры', 'Мур-р-рно', 'Вайб правильный', 'Агонь 🔥', 'Красиво', 'Рил верно', 'Сигма-ход'];
+const PRAISE_TRAP = ['Минус пойман 🎯', 'Минус в бане', 'Минус не прошёл', 'Знак на месте 😼'];
+const OOPS = ['Не то, но не страшно', 'Почти!', 'Кот в шоке 🙀', 'Мимо'];
+const OOPS_TRAP = ['Минус украл 100 ауры', 'Ловушка минуса!', 'Знак сбежал', 'Минус хитрит'];
+const STREAK = { 3: '3 подряд — разгоняешься', 5: '5 подряд — ты в потоке 🔥', 8: '8 подряд — сигма-алгебра', 12: '12 подряд. Кот Икс аплодирует лапками', 20: '20 подряд?! Минус пишет заявление об уходе' };
+const MASTERED = ['Усвоено ✓', 'Тема закрыта 🔒', 'Понято и доказано', 'Это теперь твоё'];
+const pick = a => a[Math.floor(Math.random() * a.length)];
+
+const XK = { catSVG, minusSVG, GUIDE, CATS, SAYS, PRAISE, PRAISE_TRAP, OOPS, OOPS_TRAP, STREAK, MASTERED, pick };
+if (typeof module !== 'undefined' && module.exports) module.exports = XK;
+else root.XK = XK;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>
+/* Икс-квест 2 — интерфейс: карта миссий, уровни на движке усвоения, числовая прямая, скобки, плитки, котики, отчёт для мамы, приз. */
+(function () {
+'use strict';
+const { LEVELS, DAYS, CONCEPTS, gen, check } = GC;
+const NAME = 'Эва';
+const KEY = 'xquest2.v1';
+const MOM_PIN = '7317';
+const h = XM.richHTML, mh = XM.mathHTML, esc = XM.esc;
+const $app = document.getElementById('app');
+const $sheet = document.getElementById('sheet');
+const $scrim = document.getElementById('scrim');
+const $toast = document.getElementById('toast');
+const FORMS = Object.fromEntries(Object.values(CONCEPTS).map(c => [c.id, c.forms]));
+
+/* ---------- сохранение (только в этом телефоне) ---------- */
+function fresh() {
+  return { v: 1, onboarded: false, sound: true, levels: {}, mastery: {}, traps: {}, solved: 0, bestStreak: 0,
+    time: {}, first: Date.now(), last: Date.now(), prize: { want: '', why: '', when: '' }, prizeAt: 0 };
+}
+function load() { let s = null; try { s = JSON.parse(localStorage.getItem(KEY)); } catch (e) { /* приватный режим */ } return Object.assign(fresh(), s || {}); }
+let S = load();
+function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* не страшно */ } }
+const lv = id => (S.levels[id] = S.levels[id] || { done: false, runs: 0, ok: 0, bad: 0, doneAt: 0 });
+const isDone = id => !!(S.levels[id] && S.levels[id].done);
+const idx = id => LEVELS.findIndex(l => l.id === id);
+const isOpen = i => i === 0 || isDone(LEVELS[i - 1].id);
+const nextLevel = () => LEVELS.find((l, i) => isOpen(i) && !isDone(l.id));
+const savedCount = () => LEVELS.filter(l => isDone(l.id)).length;
+const today = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
+const mins = ms => Math.round(ms / 60000);
+const pick = XK.pick;
+function plural(n, [one, few, many]) { const a = Math.abs(n) % 100, b = a % 10; return a > 10 && a < 20 ? many : b === 1 ? one : b >= 2 && b <= 4 ? few : many; }
+const masteredCount = ids => ids.filter(c => GM.isMastered(S.mastery, c)).length;
+
+let lastAct = 0;
+function tick() {
+  const now = Date.now();
+  if (lastAct) { const k = today(); S.time[k] = (S.time[k] || 0) + Math.min(now - lastAct, 90000); }
+  lastAct = now; S.last = now;
+}
+
+/* ---------- звук ---------- */
+let AC = null;
+function tone(freqs, dur = 0.11, type = 'sine', vol = 0.07) {
+  if (!S.sound) return;
+  try {
+    AC = AC || new (window.AudioContext || window.webkitAudioContext)();
+    if (AC.state === 'suspended') AC.resume();
+    const t0 = AC.currentTime + 0.01;
+    freqs.forEach((f, i) => {
+      const o = AC.createOscillator(), g = AC.createGain(), s = t0 + i * dur;
+      o.type = type; o.frequency.value = f;
+      g.gain.setValueAtTime(0.0001, s); g.gain.exponentialRampToValueAtTime(vol, s + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, s + dur);
+      o.connect(g); g.connect(AC.destination); o.start(s); o.stop(s + dur + 0.03);
+    });
+  } catch (e) { /* без звука */ }
+}
+const sfx = {
+  tap: () => tone([520], 0.035, 'sine', 0.025), ok: () => tone([660, 990], 0.1), bad: () => tone([240, 170], 0.15, 'triangle', 0.08),
+  warn: () => tone([420], 0.09, 'triangle', 0.05), win: () => tone([523, 659, 784, 1047, 1319], 0.12), meow: () => tone([880, 1175, 740], 0.09, 'sine', 0.05),
+  master: () => tone([784, 988, 1175, 1568], 0.09, 'sine', 0.06),
+};
+
+/* ---------- тост, шторка, конфетти ---------- */
+let toastT = 0;
+function toast(msg, kind = 'warn', ms = 2600) {
+  if (!msg) return;
+  $toast.innerHTML = `<div class="t ${kind}">${h(msg)}</div>`;
+  $toast.classList.remove('on'); void $toast.offsetWidth; $toast.classList.add('on');
+  clearTimeout(toastT); toastT = setTimeout(() => $toast.classList.remove('on'), ms);
+}
+function showSheet(html, { dismiss = false } = {}) {
+  $sheet.querySelector('.in').innerHTML = html; $sheet.querySelector('.in').scrollTop = 0;
+  $sheet.classList.add('on'); $scrim.classList.add('on'); $scrim.dataset.dismiss = dismiss ? '1' : '';
+}
+function hideSheet() { $sheet.classList.remove('on'); $scrim.classList.remove('on'); }
+const sheetOpen = () => $sheet.classList.contains('on');
+function confetti(n = 150) {
+  const c = document.getElementById('fx'), x = c.getContext('2d'), dpr = window.devicePixelRatio || 1;
+  const W = (c.width = innerWidth * dpr), H = (c.height = innerHeight * dpr);
+  c.style.display = 'block';
+  const cols = ['#ff4f8b', '#4aa8ff', '#b8f04a', '#ffcf4a', '#ffffff'];
+  const ps = Array.from({ length: n }, () => ({ x: W / 2 + (Math.random() - 0.5) * W * 0.3, y: H * 0.38, vx: (Math.random() - 0.5) * 18 * dpr, vy: (-Math.random() * 16 - 6) * dpr,
+    r: (5 + Math.random() * 6) * dpr, c: cols[(Math.random() * cols.length) | 0], a: Math.random() * 6, va: (Math.random() - 0.5) * 0.4 }));
+  const t0 = performance.now();
+  (function f(t) {
+    const k = (t - t0) / 2600;
+    x.clearRect(0, 0, W, H);
+    for (const p of ps) {
+      p.vy += 0.55 * dpr; p.x += p.vx; p.y += p.vy; p.vx *= 0.99; p.a += p.va;
+      x.save(); x.translate(p.x, p.y); x.rotate(p.a); x.globalAlpha = Math.max(0, 1 - k); x.fillStyle = p.c; x.fillRect(-p.r / 2, -p.r / 4, p.r, p.r / 2); x.restore();
+    }
+    if (k < 1) requestAnimationFrame(f); else { x.clearRect(0, 0, W, H); c.style.display = 'none'; }
+  })(t0);
+}
+function render(html, cls) { $app.className = cls || ''; $app.innerHTML = html; window.scrollTo(0, 0); }
+const bar = (title, back = 'home', meta = '') => `<header class="bar"><button class="ico" data-act="${back}" aria-label="Назад">‹</button><div class="ttl">${esc(title)}</div><div class="meta">${meta}</div></header>`;
+
+/* ================= ЭКРАНЫ ================= */
+
+function scrOnboard() {
+  const inSafari = navigator.standalone === false;
+  render(`<div class="center onb">
+    <div class="hi" style="justify-content:center">${XK.catSVG(XK.GUIDE, { size: 120 })}</div>
+    <div class="kicker" style="color:var(--pink)">Икс-квест 2</div>
+    <h1>С возвращением, ${NAME}!</h1>
+    <p>Мяу. Плохие новости: Минус ${XK.minusSVG(46)} вернулся. Он запомнил, где ты чаще всего ошибалась, и спрятался ровно там: в вычитании с минусом, в скобках, в подобных и в переносе через «=».</p>
+    <p><b>16 уровней — 16 котиков.</b> Четыре миссии, минут по 25.</p>
+    <p>Правило как в Гео-квесте: тема закрывается, когда ответишь верно три раза подряд, причём по-разному. Ошиблась — объясню и спрошу то же самое иначе.</p>
+    <div class="prizebox"><span>🎁</span><div><b>Приз</b><br>Выбираешь сама. В конце напишешь маме заявку.</div></div>
+    ${inSafari ? `<div class="tipbox">Совет: сначала добавь игру на экран «Домой» — кнопка «Поделиться» ⬆︎ → «На экран „Домой“». И открывай уже оттуда, иначе прогресс может потеряться.</div>` : ''}
+    <button class="btn big" data-act="startGame">Погнали</button>
+  </div>`, 'scr-onb');
+}
+
+function scrHome() {
+  run = null; lastAct = 0;
+  const nx = nextLevel(), saved = savedCount();
+  const greet = pick(['Минус уже нервничает.', 'Котики ждут спасения.', 'Погнали? Я заварил валерьянку.', 'Сегодня без кринжа и без лишних минусов.', 'Минус спрятался. Найдём.', 'Мур. Рад тебя видеть снова.']);
+  const days = DAYS.map(d => {
+    const ls = LEVELS.map((l, i) => ({ l, i })).filter(o => o.l.day === d.n);
+    const open = isOpen(ls[0].i), all = ls.every(o => isDone(o.l.id));
+    const nodes = ls.map(({ l, i }, k) => {
+      const st = isDone(l.id) ? 'done' : isOpen(i) ? 'open' : 'lock';
+      const inner = isDone(l.id) ? XK.catSVG(XK.CATS[l.id], { size: 40 }) : l.boss ? (l.final ? '🏁' : '👑') : String(k + 1);
+      return `<button class="node ${st}${nx && nx.id === l.id ? ' cur' : ''}${l.boss ? ' boss' : ''}" data-act="${st === 'lock' ? 'locked' : 'intro'}" data-id="${l.id}" aria-label="${esc(l.title)}">${inner}</button>`;
+    }).join('');
+    return `<section class="day day${d.n}${open ? '' : ' locked'}">
+      <div class="dhead"><span>Миссия ${d.n}</span>${all ? '<span class="dok">пройдена ✓</span>' : open ? '' : '<span>🔒</span>'}</div>
+      <h2>${esc(d.title)}</h2><p>${esc(d.sub)}</p><div class="nodes">${nodes}</div></section>`;
+  }).join('');
+  const allC = Object.keys(CONCEPTS), mc = masteredCount(allC);
+  render(`<div class="home">
+    <header class="top"><div class="logo">Икс<span>-квест 2</span></div><button class="ico" data-act="sound" aria-label="Звук">${S.sound ? '🔊' : '🔇'}</button></header>
+    <div class="hi">${XK.catSVG(XK.GUIDE, { size: 62 })}<div class="bubble">Привет, ${NAME}! ${esc(greet)}</div></div>
+    <div class="prize-bar"><div class="pb-t"><span>Котиков спасено: <b>${saved} из ${LEVELS.length}</b></span><span>🎁</span></div>
+      <div class="pb"><i style="width:${(saved / LEVELS.length) * 100}%"></i></div>
+      <div class="pb-s">Тем усвоено: ${mc} из ${allC.length}${S.prizeAt ? ' · приз твой! Загляни в заявку' : ''}</div></div>
+    ${nx ? `<button class="btn big go day${nx.day}" data-act="intro" data-id="${nx.id}">${saved ? 'Продолжить' : 'Начать'}: ${esc(nx.title)}</button>`
+      : `<button class="btn big go" data-act="prize">🎁 Заявка на приз</button>`}
+    ${days}
+    <nav class="links"><button data-act="cats">🐱 Котики</button><button data-act="cheat">📒 Шпаргалка</button><button data-act="mom">💌 Для мамы</button></nav>
+  </div>`, 'scr-home');
+}
+
+function scrIntro(id) {
+  const i = idx(id), L = LEVELS[i];
+  if (!isOpen(i)) return ACT.locked();
+  const n = LEVELS.filter(l => l.day === L.day).findIndex(l => l.id === id) + 1;
+  const goal = L.boss ? `${'❤️'.repeat(L.hearts)} ${L.count} заданий, три сердечка: можно ошибиться дважды. Третья ошибка — заново, с другими числами.`
+    : `Цель: усвоить ${L.concepts.length === 1 ? 'тему' : 'темы'} — ${L.concepts.map(c => '«' + CONCEPTS[c].title + '»').join(' и ')}. Усвоено = 3 верных подряд разными способами.`;
+  const cat = XK.CATS[id], got = isDone(id);
+  render(`<div class="intro day${L.day}">
+    ${bar('Миссия ' + L.day + ' · ' + (L.boss ? 'Босс' : 'Уровень ' + n))}
+    <h1>${esc(L.title)}</h1>
+    <div class="says">${XK.catSVG(XK.GUIDE, { size: 54 })}<div class="bubble">${esc(XK.SAYS[id] || '')}</div></div>
+    <div class="rules">${(L.rules || []).map(r => `<div class="rule">${h(r)}</div>`).join('')}</div>
+    ${L.example && L.example.length ? `<div class="ex"><div class="ex-h">Смотри</div>${L.example.map((e, k) => `<div class="ex-l" style="animation-delay:${0.3 + k * 0.55}s">${h(e)}</div>`).join('')}</div>` : ''}
+    <div class="goal">${goal}</div>
+    <div class="reward">${XK.catSVG(cat, { size: 44, locked: !got })}<span>${got ? `Здесь ты спасла котика «${esc(cat.name)}»` : 'Здесь ждёт спасения котик'}</span></div>
+    <button class="btn big" data-act="play" data-id="${id}">${L.boss ? 'В бой' : 'Поехали'}</button>
+  </div>`, 'scr-intro day' + L.day);
+}
+
+/* ================= ИГРА ================= */
+let run = null;
+
+function reviewPool(L) {
+  const i = idx(L.id), seen = new Set();
+  LEVELS.slice(0, i).forEach(l => l.concepts.forEach(c => seen.add(c)));
+  return [...seen].filter(c => !L.concepts.includes(c));
+}
+function startLevel(id) {
+  const L = LEVELS[idx(id)], l = lv(id);
+  run = { lvl: L, n: 0, lastId: null, streak: 0, ok: 0, bad: 0, best: 0, hearts: L.hearts || 0, lock: false, input: '', sel: [], signs: [], tiles: null, phase: 'ask', fig: null, mastered: [] };
+  lastAct = Date.now();
+  l.runs++; save();
+  if (L.boss) {
+    const pool = L.concepts.slice();
+    run.queue = [];
+    for (let k = 0; k < L.count; k++) { const c = pool[k % pool.length]; run.queue.push(gen(c)); }
+    run.queue = shuffle(run.queue); run.qi = 0;
+    setTask(run.queue[0]); return;
+  }
+  nextTask();
+}
+function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function nextTask() {
+  const L = run.lvl;
+  if (GM.levelDone(S.mastery, L.concepts)) return levelWin();
+  const pk = GM.pickNext(S.mastery, L.concepts, FORMS, reviewPool(L), run.n, run.lastId);
+  if (!pk) return levelWin();
+  const t = gen(pk.id, pk.form); t.review = pk.review; t.lost = pk.lost;
+  run.lastId = pk.id;
+  setTask(t);
+}
+function setTask(t) {
+  run.task = t; run.input = ''; run.sel = []; run.signs = t.type === 'signs' ? t.start.slice() : []; run.tiles = t.type === 'tiles' ? initTiles(t) : null; run.phase = 'ask'; run.fig = null; run.n++;
+  renderPlay();
+}
+const curTask = () => run.task;
+
+function renderPlay() {
+  const L = run.lvl, t = curTask();
+  const pct = L.boss ? (run.qi / run.queue.length) * 100 : GM.progress(S.mastery, L.concepts) * 100;
+  const meta = L.boss ? `<span class="hearts">${'❤️'.repeat(Math.max(0, run.hearts))}${'🤍'.repeat(L.hearts - Math.max(0, run.hearts))}</span>`
+    : `${masteredCount(L.concepts)}/${L.concepts.length} ✓`;
+  const parts = [];
+  if (t.review) parts.push(`<div class="review">🔁 Повторялка: ${esc(CONCEPTS[t.concept].title)}${t.lost ? ' — вернём тему' : ''}</div>`);
+  parts.push(taskHTML(t));
+  render(`${bar(L.boss ? `${L.short} · ${run.qi + 1} из ${run.queue.length}` : L.title, 'quit', meta)}
+    <div class="prog"><i style="width:${pct}%"></i></div>
+    <main class="stage hasfig" id="stage">${parts.join('')}</main>
+    <footer class="foot">${footHTML(t)}</footer>`, `scr-play day${L.day}`);
+  mountFig();
+  const st = document.getElementById('stage'), task = st.querySelector('.task');
+  if (task && task.offsetHeight <= st.clientHeight) st.scrollTop = st.scrollHeight;
+}
+function taskHTML(t) {
+  const reveal = run.phase === 'reveal';
+  const fig = reveal ? t.reveal.fig : t.fig;
+  let s = `<div class="task${!fig && !t.math && t.type !== 'signs' && t.type !== 'pick' && t.type !== 'tiles' ? ' big' : ''}">`;
+  if (reveal) {
+    const mine = t.options[run.choice], ok = mine.ok;
+    s += `<div class="lead">${ok ? '✅ Ты сказала: «' + esc(mine.label) + '» — верно.' : '❌ Ты сказала: «' + esc(mine.label) + '». Смотри, как на самом деле.'}</div>`;
+    s += `<div class="lead story-lead">${h(t.reveal.lead)}</div>`;
+  } else {
+    s += `<div class="lead${!fig && !t.math ? ' story-lead' : ''}">${h(t.lead)}</div>`;
+  }
+  if (!reveal && t.math) s += `<div class="math">${mh(t.math)}</div>`;
+  if (fig) s += `<div class="figbox${fig.drag ? ' drg' : ''}" id="fig"></div>`;
+  if (!reveal && t.tip) s += `<div class="tip">💡 ${h(t.tip)}</div>`;
+  if (!reveal && (t.type === 'num' || t.type === 'expr')) s += `<div class="ans" id="ans">${fieldHTML(t)}</div>`;
+  if (!reveal && t.type === 'signs') s += signsHTML(t);
+  if (!reveal && t.type === 'pick') s += pickHTML(t);
+  if (!reveal && t.type === 'tiles') s += tilesHTML();
+  if (!reveal && t.type === 'finderr') s += `<div class="errs">${t.lines.map((l, i) => `<button class="errl" data-act="errline" data-i="${i}">${mh(l)}</button>`).join('')}</div>`;
+  return s + '</div>';
+}
+const spaced = raw => raw.replace(/(?!^)([+-])/g, ' $1 ').replace(/\s+/g, ' ').trim();
+function fieldHTML(t) {
+  const pre = t.prefix ? `<span class="pre">${mh(t.prefix)}</span>` : '';
+  return `${pre}<span class="val">${run.input ? mh(spaced(run.input)) : '<span class="ph">?</span>'}<i class="caret"></i></span>`;
+}
+function updateField() { const a = document.getElementById('ans'); if (a) a.innerHTML = fieldHTML(curTask()); }
+/* расставь знаки: = pre ±|t1| ±|t2| … */
+function signsHTML(t) {
+  const chips = t.terms.map((x, i) => `<button class="sgn${run.signs[i] ? ' neg' : ''}" data-act="flip" data-i="${i}"><b>${run.signs[i] ? '−' : '+'}</b><span>${mh(XM.termAbs(x))}</span></button>`).join('');
+  return `<div class="signs"><span class="pre">${mh('= ' + t.pre)}</span>${chips}</div>`;
+}
+/* отметь: плитки-слагаемые (для уравнений — по сторонам) */
+function pickHTML(t) {
+  const chip = c => `<button class="chip${run.sel.includes(c.id) ? ' on' : ''}" data-act="pick" data-id="${c.id}">${mh(c.label)}</button>`;
+  if (t.chips.some(c => c.side)) {
+    const L = t.chips.filter(c => c.side === 'L').map(chip).join(''), R = t.chips.filter(c => c.side === 'R').map(chip).join('');
+    return `<div class="tiles"><div class="side sl">${L}</div><div class="eqs">=</div><div class="side sr">${R}</div></div>`;
+  }
+  return `<div class="chips">${t.chips.map(chip).join('')}</div>`;
+}
+/* плитки: перенос через «=» (как в Икс-квесте) */
+function initTiles(t) {
+  return t.left.map((x, i) => ({ id: 'L' + i, v: x.v, c: x.c, from: 'L', ord: i, moved: false }))
+    .concat(t.right.map((x, i) => ({ id: 'R' + i, v: x.v, c: x.c, from: 'R', ord: i, moved: false })));
+}
+const tc = x => (x.moved ? x.c.neg() : x.c);
+const onLeft = x => (x.from === 'L') !== x.moved;
+const tileOK = x => (x.v ? onLeft(x) : !onLeft(x));
+function tilesSides() {
+  const ts = run.tiles;
+  return { left: ts.filter(x => x.from === 'L' && !x.moved).concat(ts.filter(x => x.from === 'R' && x.moved)), right: ts.filter(x => x.from === 'R' && !x.moved).concat(ts.filter(x => x.from === 'L' && x.moved)) };
+}
+const tileHTML = x => `<button class="tile${x.v ? ' tv' : ''}${x.anim ? ' moved' : ''}" data-act="tile" data-id="${x.id}">${mh(XM.fmtSigned({ v: x.v, c: tc(x) }))}</button>`;
+function tilesHTML() { const { left, right } = tilesSides(); return `<div class="tiles"><div class="side sl">${left.map(tileHTML).join('')}</div><div class="eqs">=</div><div class="side sr">${right.map(tileHTML).join('')}</div></div>`; }
+function tileTap(id) {
+  if (!run || run.lock || sheetOpen()) return;
+  const x = run.tiles.find(y => y.id === id);
+  if (tileOK(x)) { sfx.warn(); return toast(x.v ? 'Этот уже на месте: иксы живут слева' : 'Этот уже на месте: числа живут справа'); }
+  run.pending = id;
+  const cur = { v: x.v, c: tc(x) }, nxt = { v: x.v, c: tc(x).neg() };
+  const o = Math.random() < 0.5 ? [[cur, 0], [nxt, 1]] : [[nxt, 1], [cur, 0]];
+  showSheet(`<div class="fb ask"><p class="q">Переносим ${h('`' + XM.fmtSigned(cur) + '`')} ${onLeft(x) ? 'направо' : 'налево'} через «=». Каким он станет?</p>
+    <div class="two">${o.map(([q, n]) => `<button class="btn big ghost tilebtn" data-act="tileSign" data-neg="${n}">${mh(XM.fmtSigned(q))}</button>`).join('')}</div></div>`, { dismiss: true });
+}
+function tileSign(neg) {
+  const x = run && run.tiles && run.tiles.find(y => y.id === run.pending);
+  if (!x) return;
+  hideSheet(); tick();
+  const cur = { v: x.v, c: tc(x) }, nxt = { v: x.v, c: tc(x).neg() };
+  if (!neg) return onBad(curTask(), { bad: true, trap: true, msg: `Слагаемое перешло через «=» — знак меняется: ${'`' + XM.fmtSigned(cur) + '`'} → ${'`' + XM.fmtSigned(nxt) + '`'}. Кто остаётся на своей стороне — знак не меняет.` });
+  sfx.tap(); x.moved = true; x.anim = true; renderPlay(); x.anim = false;
+  if (run.tiles.every(tileOK)) { run.lock = true; setTimeout(() => { run.lock = false; if (run) submit({ ok: true }); }, 450); }
+}
+function footHTML(t) {
+  if (run.phase === 'reveal') return `<button class="btn big" data-act="revealDone">Дальше</button>`;
+  const k = (label, key, cls = '') => `<button class="k ${cls}" data-act="key" data-k="${key}">${label}</button>`;
+  switch (t.type) {
+    case 'choice': case 'predict':
+      return `<div class="opts${t.big ? ' cmp' : ''}">${t.options.map((o, i) => `<button class="opt" data-act="choice" data-i="${i}">${h(o.label)}</button>`).join('')}</div>`;
+    case 'drag':
+      return `<div class="foot-hint">Тяни зелёную точку по прямой</div><button class="btn big" data-act="submit">Проверить</button>`;
+    case 'finderr':
+      return `<div class="foot-hint">Нажми на строчку, где появилась ошибка</div>`;
+    case 'signs':
+      return `<div class="foot-hint">Нажми на знак, чтобы поменять его</div><button class="btn big" data-act="submit">Проверить</button>`;
+    case 'pick':
+      return `<div class="foot-hint">Отметь все нужные и нажми «Проверить»</div><button class="btn big" data-act="submit">Проверить</button>`;
+    case 'tiles':
+      return `<div class="foot-hint">Нажимай на плитку, которая стоит не на своей стороне</div>`;
+    case 'num': case 'expr': {
+      const vars = t.type === 'expr' ? (t.vars || []).slice(0, 2) : [];
+      return '<div class="pad">'
+        + k('7', '7') + k('8', '8') + k('9', '9') + k('<span class="mn">−</span>', '-', 'op')
+        + k('4', '4') + k('5', '5') + k('6', '6') + k('+', '+', 'op')
+        + k('1', '1') + k('2', '2') + k('3', '3') + k('/', '/', 'op')
+        + k(',', ',', 'op') + k('0', '0') + k('⌫', 'back', 'op' + (vars[0] ? '' : ' span2')) + (vars[0] ? k(`<i>${vars[0]}</i>`, vars[0], 'var') : '')
+        + (vars[1] ? k(`<i>${vars[1]}</i>`, vars[1], 'var') : '') + `<button class="k ok ${vars[1] ? 'span3' : 'span4'}" data-act="submit">Проверить</button></div>`;
+    }
+  }
+  return '';
+}
+/* живой чертёж: числовая прямая */
+function mountFig() {
+  const el = document.getElementById('fig'); if (!el) return;
+  const t = curTask(), reveal = run.phase === 'reveal';
+  const scene = reveal ? t.reveal.fig : t.fig;
+  const ro = reveal ? t.reveal.readout : t.readout;
+  run.fig = GEO.mount(el, scene, { extra: ro ? p => GEO.readout(ro(p)) : '', locked: () => run.lock || sheetOpen() });
+}
+
+/* ---------- ответ ---------- */
+function rec(t, good, trapHit) {
+  const l = lv(run.lvl.id); good ? l.ok++ : l.bad++;
+  if (trapHit) S.traps[t.concept] = (S.traps[t.concept] || 0) + 1;
+  return GM.record(S.mastery, t.concept, t.form, good);
+}
+function submit(input) {
+  if (!run || run.lock || sheetOpen()) return;
+  const t = curTask();
+  if (run.phase === 'reveal') return;
+  if (input == null) {
+    if (t.type === 'num' || t.type === 'expr') input = { str: run.input };
+    else if (t.type === 'signs') input = { neg: run.signs.slice() };
+    else if (t.type === 'pick') input = { sel: run.sel.slice() };
+    else if (t.type === 'drag') input = { points: run.fig.scene.points };
+    else return;
+  }
+  tick();
+  const r = check(t, input);
+  if (r.retry) { sfx.warn(); return toast(r.msg, 'warn', 3000); }
+  if (r.ok) onOk(t); else onBad(t, r, input);
+}
+function praise(t) {
+  if (XK.STREAK[run.streak]) return XK.STREAK[run.streak];
+  return pick(CONCEPTS[t.concept].trapTitle && Math.random() < 0.4 ? XK.PRAISE_TRAP : XK.PRAISE);
+}
+function onOk(t) {
+  run.streak++; run.ok++; run.best = Math.max(run.best, run.streak); S.bestStreak = Math.max(S.bestStreak, run.streak); S.solved++;
+  const m = rec(t, true, false); save(); sfx.ok();
+  let msg = praise(t);
+  if (m.justMastered) { run.mastered.push(t.concept); sfx.master(); msg = `${pick(XK.MASTERED)} «${CONCEPTS[t.concept].title}»`; }
+  if (t.type === 'predict') { run.choice = run.lastChoice; run.phase = 'reveal'; renderPlay(); toast(msg, 'ok', 1400); return; }
+  run.lock = true; markRight(); toast(msg, 'ok', m.justMastered ? 1800 : 900);
+  setTimeout(() => { run.lock = false; if (run) afterTask(); }, m.justMastered ? 950 : 650);
+}
+function afterTask() {
+  const L = run.lvl;
+  if (L.boss) {
+    run.qi++;
+    if (run.qi >= run.queue.length) return bossWin();
+    return setTask(run.queue[run.qi]);
+  }
+  nextTask();
+}
+function markRight() {
+  const pr = document.querySelector('.prog i');
+  if (pr && !run.lvl.boss) pr.style.width = GM.progress(S.mastery, run.lvl.concepts) * 100 + '%';
+  if (pr && run.lvl.boss) pr.style.width = ((run.qi + 1) / run.queue.length) * 100 + '%';
+  const a = document.getElementById('ans'); if (a) a.classList.add('right');
+  const f = document.getElementById('fig'); if (f) f.classList.add('right');
+}
+function onBad(t, r, input) {
+  run.streak = 0; run.bad++;
+  const trapHit = !!r.trap;
+  const m = rec(t, false, trapHit);
+  if (run.lvl.boss) run.hearts--;
+  save(); sfx.bad();
+  const meme = (t.type === 'num' || t.type === 'expr') && run.input === '67';
+  const title = meme ? 'Сикс-севен 🤷 Мем засчитан, ответ — нет' : trapHit ? pick(XK.OOPS_TRAP) : pick(XK.OOPS);
+  const steps = (t.explain || []).map(s => `<li>${h(s)}</li>`).join('');
+  const L = run.lvl;
+  const forms = FORMS[t.concept].filter(f => f !== t.form);
+  const after = L.boss ? (run.hearts > 0 ? `Осталось: ${'❤️'.repeat(run.hearts)}` : 'Сердечки кончились 💔')
+    : t.type === 'predict' ? 'Сейчас покажу на прямой, как на самом деле.'
+    : forms.length ? `Серия по теме «${CONCEPTS[t.concept].title}» начинается заново. Спрошу это же по-другому: ${GC.FORMS_RU[forms[0]] || ''}.` : '';
+  if (m.lost) toast(`Тема «${CONCEPTS[t.concept].title}» снова в работе`, 'warn', 2200);
+  showSheet(`<div class="fb bad"><h3>${esc(title)}</h3><p>${h(r.msg)}</p>${steps ? `<div class="how">Как правильно</div><ol class="steps">${steps}</ol>` : ''}${after ? `<div class="hl">${esc(after)}</div>` : ''}<button class="btn big" data-act="afterBad">Понятно</button></div>`);
+}
+function afterBad() {
+  hideSheet();
+  const L = run.lvl, t = curTask();
+  if (L.boss && run.hearts <= 0) return bossFail();
+  if (t.type === 'predict') { run.choice = run.lastChoice; run.phase = 'reveal'; renderPlay(); return; }
+  afterTask();
+}
+function revealDone() {
+  if (!run || run.phase !== 'reveal') return;
+  const t = curTask();
+  toast(t.reveal.done, 'ok', 3200);
+  run.phase = 'ask'; run.lock = true;
+  setTimeout(() => { run.lock = false; if (run) afterTask(); }, 300);
+}
+
+/* ---------- финалы уровня ---------- */
+function levelWin() {
+  const L = run.lvl, l = lv(L.id), first = !l.done;
+  l.done = true; l.doneAt = l.doneAt || Date.now(); save();
+  const st = { ok: run.ok, bad: run.bad, best: run.best, mastered: run.mastered.slice() };
+  run = null; lastAct = 0;
+  sfx.win(); confetti();
+  const cat = XK.CATS[L.id], nx = nextLevel();
+  render(`<div class="center day${L.day}">
+    <div class="burst">${XK.catSVG(cat, { size: 170 })}</div>
+    <div class="kicker">${first ? 'Котик спасён!' : 'Пройдено ещё раз'}</div>
+    <h1>${esc(cat.name)}</h1>
+    <p class="power">${esc(cat.power)}</p>
+    <div class="stats"><div><b>${st.ok}</b><span>верно</span></div><div><b>${st.bad}</b><span>${plural(st.bad, ['ошибка', 'ошибки', 'ошибок'])}</span></div><div><b>${st.best}</b><span>лучшая серия</span></div></div>
+    ${st.mastered.length ? `<div class="daydone">Усвоено: ${st.mastered.map(c => '«' + esc(CONCEPTS[c].title) + '»').join(', ')} 🔒</div>` : ''}
+    ${L.boss ? `<div class="daydone">Миссия ${L.day} пройдена! 🎉 ${L.day < DAYS.length ? 'Можно продолжить сейчас — или завтра на свежую голову.' : ''}</div>` : ''}
+    ${nx ? `<button class="btn big day${nx.day}" data-act="intro" data-id="${nx.id}">Дальше: ${esc(nx.title)}</button>` : ''}
+    <button class="btn ghost" data-act="home">На карту</button>
+  </div>`, 'scr-saved day' + L.day);
+}
+function bossWin() {
+  const L = run.lvl;
+  if (!L.final) return levelWin();
+  const l = lv(L.id); l.done = true; l.doneAt = Date.now(); S.prizeAt = S.prizeAt || Date.now(); save();
+  run = null; lastAct = 0;
+  scrPrize(true);
+}
+function bossFail() {
+  const L = run.lvl; save(); run = null; lastAct = 0;
+  render(`<div class="center day${L.day}">
+    <div class="burst">${XK.catSVG({ ...XK.GUIDE, eyes: 'sleepy' }, { size: 140 })}</div>
+    <h1>Сердечки кончились</h1>
+    <p class="power">Минус украл одно сердечко лишнее. Бывает. Босса редко проходят с первой попытки — в следующий раз задания будут другие.</p>
+    <button class="btn big" data-act="play" data-id="${L.id}">Ещё раз</button>
+    <button class="btn ghost" data-act="cheat">Посмотреть шпаргалку</button>
+    <button class="btn ghost" data-act="home">На карту</button>
+  </div>`, 'scr-fail day' + L.day);
+}
+
+/* ---------- приз ---------- */
+function prizeText() {
+  const o = S.prize;
+  return [`Что хочу: ${o.want || '—'}`, `Почему заслужила: ${o.why || '—'}`, `Когда: ${o.when || '—'}`].join('\n');
+}
+function scrPrize(fresh) {
+  if (!S.prizeAt) {
+    const left = LEVELS.length - savedCount();
+    return render(`<div class="center">${bar('Приз')}<div class="burst">🎁</div><h1>Приз ещё впереди</h1><p class="power">Осталось спасти котиков: ${left}. Какой будет приз — решишь сама, когда пройдёшь всё.</p><button class="btn big" data-act="home">На карту</button></div>`, 'scr-prize');
+  }
+  const o = S.prize, allC = Object.keys(CONCEPTS);
+  render(`<div class="center form day4">
+    <div class="burst">${XK.catSVG(XK.CATS.d4b, { size: 150 })}</div>
+    <div class="kicker">Икс-квест 2 пройден</div>
+    <h1>${NAME}, Минус побеждён</h1>
+    <div class="stats"><div><b>${S.solved}</b><span>верных ответов</span></div><div><b>${masteredCount(allC)}/${allC.length}</b><span>тем усвоено</span></div><div><b>${S.bestStreak}</b><span>лучшая серия</span></div></div>
+    <div class="catrow">${LEVELS.map(l => XK.catSVG(XK.CATS[l.id], { size: 40 })).join('')}</div>
+    <div class="prizebox"><span>🎁</span><div><b>Приз выбираешь ты.</b><br>Напиши маме заявку — что хочешь и почему заслужила:</div></div>
+    <label>Что хочу<input id="p_want" value="${esc(o.want)}" placeholder="Например: поход в кино, стикеры, день без уборки"></label>
+    <label>Почему заслужила<textarea id="p_why" rows="3" placeholder="Спасла 16 котиков, победила Минус, раскрываю скобки без ошибок…">${esc(o.why)}</textarea></label>
+    <label>Когда<input id="p_when" value="${esc(o.when)}" placeholder="На выходных, после каникул…"></label>
+    <button class="btn big" data-act="sharePrize">Отправить заявку маме</button>
+    <button class="btn ghost" data-act="home">На карту</button>
+  </div>`, 'scr-prize');
+  ['want', 'why', 'when'].forEach(k => {
+    const el = document.getElementById('p_' + k);
+    el.addEventListener('input', () => { S.prize[k] = el.value; save(); });
+  });
+  if (fresh) { confetti(240); sfx.win(); }
+}
+async function share(text, title) {
+  try { if (navigator.share) { await navigator.share({ title, text }); return; } } catch (e) { if (e && e.name === 'AbortError') return; }
+  try { await navigator.clipboard.writeText(text); toast('Скопировано — вставь маме в чат', 'ok'); return; } catch (e) { /* покажем текст */ }
+  showSheet(`<div class="fb"><h3>Скопируй и отправь</h3><textarea style="width:100%;min-height:200px;font:inherit;background:var(--bg2);color:var(--ink);border-radius:12px;padding:10px">${esc(text)}</textarea><button class="btn" data-act="stay">Готово</button></div>`, { dismiss: true });
+}
+
+/* ---------- коллекция, шпаргалка ---------- */
+function scrCats() {
+  const cards = LEVELS.map(l => {
+    const c = XK.CATS[l.id], got = isDone(l.id);
+    return `<button class="catcard${got ? '' : ' lock'}" data-act="${got ? 'catInfo' : 'catLocked'}" data-id="${l.id}">${XK.catSVG(c, { size: 76, locked: !got })}<b>${got ? esc(c.name) : '???'}</b></button>`;
+  }).join('');
+  render(`<div>${bar('Котики')}<p class="sub">Спасено ${savedCount()} из ${LEVELS.length}. Нажми на котика — узнаешь его суперсилу.</p><div class="catgrid">${cards}</div></div>`, 'scr-cats');
+}
+function scrCheat() {
+  const last = LEVELS.reduce((a, l, i) => (isOpen(i) ? i : a), 0);
+  const items = LEVELS.slice(0, last + 1).filter(l => !l.boss).map(l => `<section class="cs day${l.day}"><h3>${esc(l.title)}</h3>${(l.rules || []).map(r => `<p>${h(r)}</p>`).join('')}${l.example && l.example.length ? `<div class="csx grid-paper">${l.example.map(e => `<div>${h(e)}</div>`).join('')}</div>` : ''}</section>`).join('');
+  render(`<div>${bar('Шпаргалка')}<p class="sub">Всё, что ты уже открыла. В школе тоже пригодится 😉</p>${items}</div>`, 'scr-cheat');
+}
+
+/* ---------- для мамы ---------- */
+function conceptState(c) {
+  const m = S.mastery[c];
+  if (!m || (!m.ok && !m.bad)) return 'none';
+  return m.mastered ? 'done' : 'work';
+}
+function stats() {
+  const allMs = Object.values(S.time).reduce((a, b) => a + b, 0);
+  const allC = Object.keys(CONCEPTS);
+  return { done: savedCount(), today: mins(S.time[today()] || 0), all: mins(allMs), mastered: masteredCount(allC), total: allC.length };
+}
+function reportText() {
+  const s = stats();
+  const lines = [`Икс-квест 2 — отчёт ${NAME} (${new Date().toLocaleDateString('ru-RU')})`, `Пройдено уровней: ${s.done} из ${LEVELS.length}; тем усвоено: ${s.mastered} из ${s.total}`,
+    `Время: сегодня ${s.today} мин, всего ${s.all} мин`, `Верных ответов: ${S.solved}, лучшая серия: ${S.bestStreak}`, ''];
+  DAYS.forEach(d => {
+    lines.push(`Миссия ${d.n}. ${d.title}:`);
+    const ids = [...new Set(LEVELS.filter(l => l.day === d.n && !l.boss).flatMap(l => l.concepts))];
+    ids.forEach(c => { const m = S.mastery[c] || { ok: 0, bad: 0 }; const st = conceptState(c); lines.push(`  ${st === 'done' ? '✓' : st === 'work' ? '…' : '○'} ${CONCEPTS[c].title} — ${m.ok} верно / ${m.bad} ошибок${S.traps[c] ? `, ловушек: ${S.traps[c]}` : ''}`); });
+  });
+  if (S.prizeAt) lines.push('', 'Заявка на приз:', prizeText());
+  return lines.join('\n');
+}
+function scrMom() {
+  const s = stats();
+  const groups = DAYS.map(d => {
+    const ids = [...new Set(LEVELS.filter(l => l.day === d.n && !l.boss).flatMap(l => l.concepts))];
+    return `<h4>Миссия ${d.n}. ${esc(d.title)}</h4><ul class="tags">${ids.map(c => {
+      const m = S.mastery[c] || { ok: 0, bad: 0, streak: 0 }, st = conceptState(c), all = m.ok + m.bad, pc = all ? Math.round((m.ok / all) * 100) : 0;
+      const label = st === 'done' ? 'усвоено' : st === 'work' ? `в работе · серия ${m.streak}/${GM.NEED}` : 'не начато';
+      return `<li class="st-${st}"><div class="tg"><span>${esc(CONCEPTS[c].title)}</span><b>${label}</b></div>${all ? `<div class="bar2"><i class="${pc < 60 ? 'low' : pc < 80 ? 'mid' : ''}" style="width:${pc}%"></i></div><div class="tgn">верно ${m.ok} из ${all}${S.traps[c] ? ` · попалась в ловушку: ${S.traps[c]}` : ''}${CONCEPTS[c].trapTitle ? ` · ловушка темы: ${esc(CONCEPTS[c].trapTitle)}` : ''}</div>` : ''}</li>`;
+    }).join('')}</ul>`;
+  }).join('');
+  const lvs = DAYS.map(d => `<ul class="lv">${LEVELS.filter(l => l.day === d.n).map(l => { const x = S.levels[l.id]; return `<li class="${x && x.done ? 'ok' : ''}"><span>${x && x.done ? '✓' : '○'} ${esc(l.title)}</span><span class="n">${x ? `${x.ok} ✓ · ${x.bad} ✗` : '—'}</span></li>`; }).join('')}</ul>`).join('');
+  const days = Object.keys(S.time).sort().map(k => `<li>${k.split('-').reverse().join('.')}: ${mins(S.time[k])} мин</li>`).join('');
+  render(`<div class="mom">${bar('Для мамы')}
+    <div class="kpi"><div><b>${s.mastered}/${s.total}</b><span>тем усвоено</span></div><div><b>${s.today}</b><span>мин сегодня</span></div><div><b>${s.all}</b><span>мин всего</span></div></div>
+    <p class="sub">Уровней: ${s.done} из ${LEVELS.length} · верных ответов: ${S.solved} · лучшая серия: ${S.bestStreak}</p>
+    <p class="sub">«Усвоено» = три верных подряд минимум двумя разными способами. Ошибка возвращает тему в работу.</p>
+    <h3>Темы</h3>${groups}
+    <h3>Уровни</h3>${lvs}
+    ${days ? `<h3>По дням</h3><ul class="days">${days}</ul>` : ''}
+    ${S.prizeAt ? `<h3>Заявка на приз</h3><div class="order">${esc(prizeText())}</div>` : ''}
+    <button class="btn big" data-act="shareReport">Отправить отчёт</button>
+    <details class="pinbox"><summary>Если прогресс сбился</summary>
+      <p class="sub">Мамин код откроет уровни до выбранной миссии.</p>
+      <input id="pin" inputmode="numeric" maxlength="4" placeholder="Код" autocomplete="off">
+      <div class="two"><button class="btn ghost" data-act="unlock" data-day="1">Открыть миссию 2</button><button class="btn ghost" data-act="unlock" data-day="2">Открыть миссию 3</button></div>
+      <div class="two"><button class="btn ghost" data-act="unlock" data-day="3">Открыть миссию 4</button></div>
+      <button class="btn ghost danger" data-act="resetAll">Стереть весь прогресс</button>
+    </details>
+  </div>`, 'scr-mom');
+}
+const pinOK = () => { const el = document.getElementById('pin'); if (el && el.value === MOM_PIN) return true; toast('Неверный код'); return false; };
+
+/* ================= СОБЫТИЯ ================= */
+const ACT = {
+  startGame() { S.onboarded = true; save(); sfx.meow(); scrHome(); },
+  home() { hideSheet(); scrHome(); },
+  intro(d) { hideSheet(); scrIntro(d.id); },
+  locked() { sfx.warn(); toast('Сначала пройди уровень перед ним — котиков спасаем по очереди'); },
+  catLocked() { sfx.warn(); toast('Этого котика ещё надо спасти'); },
+  play(d) { hideSheet(); startLevel(d.id); },
+  key(d) {
+    if (!run || run.lock || sheetOpen()) return;
+    if (d.k === 'back') run.input = run.input.slice(0, -1);
+    else if (run.input.length < 22) run.input += d.k;
+    sfx.tap(); updateField();
+  },
+  flip(d) { if (!run || run.lock || sheetOpen()) return; const i = +d.i; run.signs[i] = !run.signs[i]; sfx.tap(); rerenderTask(); },
+  pick(d) { if (!run || run.lock || sheetOpen()) return; const i = run.sel.indexOf(d.id); if (i >= 0) run.sel.splice(i, 1); else run.sel.push(d.id); sfx.tap(); rerenderTask(); },
+  tile(d) { tileTap(d.id); },
+  tileSign(d) { tileSign(d.neg === '1'); },
+  submit() { if (run) submit(); },
+  choice(d) { if (!run) return; run.lastChoice = +d.i; submit({ choice: +d.i }); },
+  errline(d) { submit({ line: +d.i }); },
+  afterBad() { if (run) afterBad(); },
+  revealDone() { revealDone(); },
+  quit() {
+    if (!run) return scrHome();
+    showSheet(`<div class="fb"><h3>Выйти из уровня?</h3><p>${run.lvl.boss ? 'Босса потом придётся начать заново.' : 'Усвоенные темы сохранятся, недоделанные — продолжишь потом.'}</p><div class="two"><button class="btn ghost" data-act="stay">Остаться</button><button class="btn" data-act="home">Выйти</button></div></div>`, { dismiss: true });
+  },
+  stay() { hideSheet(); },
+  sound() { S.sound = !S.sound; save(); scrHome(); },
+  cats() { scrCats(); },
+  cheat() { scrCheat(); },
+  mom() { scrMom(); },
+  prize() { scrPrize(false); },
+  catInfo(d) { const c = XK.CATS[d.id]; sfx.meow(); showSheet(`<div class="fb catinfo">${XK.catSVG(c, { size: 150 })}<h3>${esc(c.name)}</h3><p>${esc(c.power)}</p><button class="btn" data-act="stay">Мяу</button></div>`, { dismiss: true }); },
+  sharePrize() { share(`Мама, я прошла Икс-квест 2! 🐱 Спасла всех 16 котиков и победила Минус.\n\nЗаявка на приз:\n${prizeText()}`, 'Заявка на приз'); },
+  shareReport() { share(reportText(), 'Икс-квест 2 — отчёт'); },
+  unlock(d) {
+    if (!pinOK()) return;
+    LEVELS.forEach(l => { if (l.day <= +d.day) { lv(l.id).done = true; } }); save();
+    toast('Готово: миссия ' + (+d.day + 1) + ' открыта', 'ok'); scrMom();
+  },
+  resetAll() {
+    if (!pinOK()) return;
+    showSheet(`<div class="fb"><h3>Стереть весь прогресс?</h3><p>Все котики и статистика пропадут. Вернуть будет нельзя.</p><div class="two"><button class="btn ghost" data-act="stay">Нет</button><button class="btn" data-act="resetYes">Стереть</button></div></div>`, { dismiss: true });
+  },
+  resetYes() { S = fresh(); save(); hideSheet(); scrOnboard(); },
+};
+function rerenderTask() { const st = document.getElementById('stage'); if (st && run) { const top = st.scrollTop; renderPlay(); document.getElementById('stage').scrollTop = top; } }
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-act]');
+  if (!el) return;
+  const f = ACT[el.dataset.act];
+  if (f) { e.preventDefault(); f(el.dataset, el); }
+});
+$scrim.addEventListener('click', () => { if ($scrim.dataset.dismiss) hideSheet(); });
+document.addEventListener('keydown', e => {
+  if (e.target.closest && e.target.closest('input,textarea')) return;
+  if (sheetOpen()) {
+    if (e.key === 'Enter' || e.key === 'Escape') { const b = $sheet.querySelector('.btn[data-act]'); if (b && e.key === 'Enter') b.click(); else if ($scrim.dataset.dismiss) hideSheet(); e.preventDefault(); }
+    return;
+  }
+  if (!run || run.lock) return;
+  const t = curTask(), k = e.key;
+  if (t.type === 'num' || t.type === 'expr') {
+    if (/^[0-9]$/.test(k) || k === ',' || k === '.' || k === '-' || k === '+' || k === '/') ACT.key({ k: k === '.' ? ',' : k });
+    else if (/^[a-z]$/.test(k) && (t.vars || []).includes(k)) ACT.key({ k });
+    else if (k === 'Backspace') ACT.key({ k: 'back' });
+    else if (k === 'Enter') ACT.submit();
+    else return;
+    e.preventDefault();
+  } else if (k === 'Enter') { ACT.submit(); e.preventDefault(); }
+});
+
+
+/* офлайн: только на настоящем сайте (https), не на локальном сервере */
+if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
+
+if (!S.onboarded) scrOnboard(); else scrHome();
+})();
+
+</script>
+</body>
+</html>
